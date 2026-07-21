@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const serviceSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String },
@@ -6,5 +8,7 @@ const serviceSchema = new mongoose.Schema({
   price: { type: Number },
   aiRecommended: { type: Boolean, default: false }
 });
+
+serviceSchema.index({ category: 1 });
 
 module.exports = mongoose.model('Service', serviceSchema);

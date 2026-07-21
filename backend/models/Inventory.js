@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const inventorySchema = new mongoose.Schema({
   gunsmithId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   productName: { type: String, required: true },
@@ -8,5 +10,8 @@ const inventorySchema = new mongoose.Schema({
   price: { type: Number },
   lowStockAlert: { type: Boolean, default: false }
 });
+
+inventorySchema.index({ gunsmithId: 1 });
+inventorySchema.index({ lowStockAlert: 1 });
 
 module.exports = mongoose.model('Inventory', inventorySchema);

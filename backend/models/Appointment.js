@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const appointmentSchema = new mongoose.Schema({
   clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   gunsmithId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -9,5 +11,9 @@ const appointmentSchema = new mongoose.Schema({
   notes: { type: String },
   createdAt: { type: Date, default: Date.now }
 });
+
+appointmentSchema.index({ clientId: 1 });
+appointmentSchema.index({ gunsmithId: 1 });
+appointmentSchema.index({ date: 1 });
 
 module.exports = mongoose.model('Appointment', appointmentSchema);

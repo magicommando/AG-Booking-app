@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const workOrderSchema = new mongoose.Schema({
   appointmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', required: true },
   gunsmithId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -11,5 +13,7 @@ const workOrderSchema = new mongoose.Schema({
     total: { type: Number }
   }
 });
+
+workOrderSchema.index({ appointmentId: 1 }, { unique: true });
 
 module.exports = mongoose.model('WorkOrder', workOrderSchema);
