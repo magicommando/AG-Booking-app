@@ -3,7 +3,13 @@ const User = require('../models/User');
 // Get a single user profile
 exports.getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const { id } = req.params;
+
+    if (req.user.userId !== id) {
+      return res.status(403).json({ message: 'Forbidden: cannot view another user' });
+    }
+
+    const user = await User.findById(id).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     res.json(user);
@@ -15,16 +21,17 @@ exports.getUser = async (req, res) => {
 // Update user profile
 exports.updateUser = async (req, res) => {
   try {
-    const updates = req.body;
+    const { id } = req.params;
 
-    // Prevent password updates here (use auth controller instead)
+    if (req.user.userId !== id) {
+      return res.status(403).json({ message: 'Forbidden: cannot update another user' });
+    }
+
+    const updates = { ...req.body };
     delete updates.password;
 
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      updates,
-      { new: true }
-    ).select('-password');
+    const user = await User.findByIdAndUpdate(id, updates, { new: true }).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
     res.json({ message: 'User updated', user });
   } catch (err) {
