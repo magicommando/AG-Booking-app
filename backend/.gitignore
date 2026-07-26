@@ -1,1 +1,25 @@
 .env
+# Node
+node_modules/
+
+# Uploads and runtime files
+uploads/
+logs/
+*.log
+
+# Environment files
+.env.local
+.env.*
+
+# IDE/editor
+.vscode/
+.idea/
+.DS_Store
+
+# Coverage and build
+coverage/
+dist/
+build/
+
+# OS
+Thumbs.db
