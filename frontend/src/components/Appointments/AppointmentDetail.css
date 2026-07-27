@@ -1,0 +1,40 @@
+.appt-container {
+  padding: 40px;
+  background: #111;
+  color: #eee;
+  min-height: 100vh;
+}
+
+.appt-container h2 {
+  text-align: center;
+  color: #c9a86a;
+  margin-bottom: 30px;
+}
+
+.appt-card {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  margin-bottom: 20px;
+}
+
+.appt-card h3 {
+  color: #c9a86a;
+  margin-bottom: 10px;
+}
+
+.appt-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: #c9a86a;
+  color: #111;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.appt-btn:hover {
+  background: #d4b47a;
+}

@@ -1,0 +1,56 @@
+.ai-container {
+  padding: 40px;
+  background: #111;
+  color: #eee;
+  min-height: 100vh;
+}
+
+.ai-container h2 {
+  color: #c9a86a;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.ai-card {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  margin-bottom: 20px;
+}
+
+.ai-card h3 {
+  color: #c9a86a;
+  margin-bottom: 10px;
+}
+
+.ai-photo {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.ai-input {
+  width: 100%;
+  padding: 12px;
+  background: #111;
+  border: 1px solid #333;
+  color: #eee;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.ai-btn {
+  padding: 10px 20px;
+  background: #c9a86a;
+  color: #111;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.ai-btn:hover {
+  background: #d4b47a;
+}

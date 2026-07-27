@@ -1,0 +1,72 @@
+.settings-container {
+  padding: 40px;
+  background: #111;
+  color: #eee;
+  min-height: 100vh;
+}
+
+.settings-container h2 {
+  text-align: center;
+  color: #c9a86a;
+  margin-bottom: 20px;
+}
+
+.settings-message {
+  text-align: center;
+  background: #333;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.settings-card {
+  background: #1a1a1a;
+  padding: 25px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  margin-bottom: 20px;
+}
+
+.settings-card h3 {
+  color: #c9a86a;
+  margin-bottom: 15px;
+}
+
+.settings-card input,
+.settings-card select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  background: #111;
+  border: 1px solid #333;
+  color: #eee;
+  border-radius: 6px;
+}
+
+.settings-btn {
+  padding: 12px 20px;
+  background: #c9a86a;
+  color: #111;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.settings-btn:hover {
+  background: #d4b47a;
+}
+
+.settings-danger-btn {
+  padding: 12px 20px;
+  background: #661111;
+  color: #eee;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.settings-danger-btn:hover {
+  background: #7a1a1a;
+}

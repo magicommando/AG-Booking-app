@@ -1,0 +1,90 @@
+.wo-container {
+  padding: 40px;
+  background: #111;
+  color: #eee;
+  min-height: 100vh;
+}
+
+.wo-container h2 {
+  text-align: center;
+  color: #c9a86a;
+  margin-bottom: 20px;
+}
+
+/* Filters */
+.wo-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.wo-filters button {
+  padding: 10px 20px;
+  background: #333;
+  color: #eee;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.wo-filter-active {
+  background: #c9a86a !important;
+  color: #111 !important;
+}
+
+/* Grid */
+.wo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.wo-card {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.wo-card h3 {
+  color: #c9a86a;
+  margin-bottom: 10px;
+}
+
+/* Status Badges */
+.wo-status {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.wo-pending {
+  background: #444;
+  color: #eee;
+}
+
+.wo-in-progress {
+  background: #c9a86a;
+  color: #111;
+}
+
+.wo-completed {
+  background: #2e662e;
+  color: #eee;
+}
+
+/* Button */
+.wo-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #c9a86a;
+  color: #111;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.wo-btn:hover {
+  background: #d4b47a;
+}

@@ -1,0 +1,103 @@
+.msg-container {
+  padding: 40px;
+  background: #111;
+  color: #eee;
+  min-height: 100vh;
+}
+
+.msg-container h2 {
+  color: #c9a86a;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Conversation List */
+.msg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.msg-card {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  cursor: pointer;
+}
+
+.msg-card:hover {
+  background: #222;
+}
+
+.msg-preview {
+  color: #ccc;
+  margin-top: 10px;
+}
+
+.msg-timestamp {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
+}
+
+/* Thread */
+.msg-thread {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  margin-bottom: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.msg-bubble {
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  max-width: 70%;
+}
+
+.msg-self {
+  background: #c9a86a;
+  color: #111;
+  margin-left: auto;
+}
+
+.msg-other {
+  background: #333;
+  color: #eee;
+  margin-right: auto;
+}
+
+.msg-time {
+  display: block;
+  font-size: 12px;
+  margin-top: 5px;
+  color: #ccc;
+}
+
+/* Input */
+.msg-input-area {
+  display: flex;
+  gap: 10px;
+}
+
+.msg-input-area input {
+  flex: 1;
+  padding: 12px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #eee;
+  border-radius: 6px;
+}
+
+.msg-input-area button {
+  padding: 12px 20px;
+  background: #c9a86a;
+  color: #111;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}

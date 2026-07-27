@@ -1,0 +1,108 @@
+.wo-details-container {
+  padding: 40px;
+  background: #111;
+  color: #eee;
+  min-height: 100vh;
+}
+
+.wo-details-container h2 {
+  text-align: center;
+  color: #c9a86a;
+  margin-bottom: 20px;
+}
+
+.wo-details-card {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  margin-bottom: 20px;
+}
+
+.wo-details-card h3 {
+  color: #c9a86a;
+  margin-bottom: 10px;
+}
+
+.wo-input {
+  width: 100%;
+  padding: 12px;
+  background: #111;
+  border: 1px solid #333;
+  color: #eee;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.wo-textarea {
+  width: 100%;
+  height: 120px;
+  padding: 12px;
+  background: #111;
+  border: 1px solid #333;
+  color: #eee;
+  border-radius: 6px;
+}
+
+.wo-parts-list {
+  list-style: none;
+  padding: 0;
+}
+
+.wo-parts-list li {
+  background: #222;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.wo-remove-btn {
+  background: #661111;
+  color: #eee;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.wo-add-part {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.wo-btn {
+  padding: 12px 20px;
+  background: #c9a86a;
+  color: #111;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.wo-btn:hover {
+  background: #d4b47a;
+}
+
+.wo-finalize-btn {
+  padding: 12px 20px;
+  background: #2e662e;
+  color: #eee;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.wo-finalize-btn:hover {
+  background: #3a7a3a;
+}
+
+.wo-actions {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
