@@ -35,7 +35,7 @@ const appointmentRoutes = require('./backend/routes/appointmentRoutes');
 const workOrderRoutes = require('./backend/routes/workOrderRoutes');
 const inventoryRoutes = require('./backend/routes/inventoryRoutes');
 const messageRoutes = require('./backend/routes/messageRoutes');
-const errorHandler = require('./middleware/errorHandler');
+const errorHandler = require('./backend/middleware/errorHandler');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -47,7 +47,6 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/workorders', workOrderRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/messages', messageRoutes);
-app.use(require('./middleware/errorHandler'));
 app.use(errorHandler);
 
 // Root test route to check if the server is running and MongoDB connection status

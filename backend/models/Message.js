@@ -1,23 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const auth = require('../middleware/auth');
-const allow = require('../middleware/roles');
-const validate = require('../middleware/validateMiddleware');
-const upload = require('../middleware/fileUpload');
-const { messageSchemas } = require('../validation/validationSchemas');
-const messageController = require('../controllers/messageController');
+const mongoose = require('mongoose');
 
-// NEW: message attachments
-router.post(
-  '/attachment',
-  auth,
-  allow(['client', 'gunsmith']),
-  upload.single('attachment'),
-  messageController.uploadAttachment
-);
+const attachmentSchema = new mongoose.Schema({
+  url: { type: String, required: true },
+  filename: { type: String }
+});
 
-router.post('/', auth, allow(['client', 'gunsmith']), validate(messageSchemas.send), messageController.sendMessage);
+const messageSchema = new mongoose.Schema({
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  recipient: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  content: { type: String },
+  attachments: [attachmentSchema],
+  createdAt: { type: Date, default: Date.now }
+});
 
-router.get('/:user1/:user2', auth, allow(['client', 'gunsmith']), messageController.getConversation);
+messageSchema.index({ sender: 1 });
+messageSchema.index({ recipient: 1 });
+messageSchema.index({ createdAt: -1 });
 
-module.exports = router;
+module.exports = mongoose.model('Message', messageSchema);
