@@ -1,0 +1,31 @@
+.servicecard {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  padding: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-bottom: 20px;
+}
+
+.servicecard:hover {
+  background: #222;
+  border-color: #444;
+}
+
+.servicecard-title {
+  color: #c9a86a;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.servicecard-desc {
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+.servicecard-price {
+  color: #eee;
+  font-weight: bold;
+  margin-top: 10px;
+}

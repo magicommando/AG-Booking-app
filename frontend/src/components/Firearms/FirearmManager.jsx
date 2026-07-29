@@ -1,3 +1,5 @@
+import FirearmCard from "./FirearmCard";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAppState } from "../../state/AppState";
 import { Link } from "react-router-dom";
@@ -5,6 +7,7 @@ import axios from "axios";
 import "./FirearmManager.css";
 
 export default function FirearmManager() {
+  const navigate = useNavigate();
   const { token, user } = useAppState();
 
   const [firearms, setFirearms] = useState([]);
@@ -100,10 +103,18 @@ export default function FirearmManager() {
   if (loading) return <div className="fm-container">Loading...</div>;
 
   return (
-    <div className="fm-container">
+    <div className="firearm-container">
       <h2>Your Firearms</h2>
 
-      <button className="fm-add-btn" onClick={() => openModal()}>
+      {firearms.map((f) => (
+        <FirearmCard
+          key={f._id}
+          firearm={f}
+          onSelect={() => navigate(`/firearms/${f._id}`)}
+        />
+      ))}
+      
+      <button className="firearm-add-btn" onClick={() => openModal()}>
         + Add Firearm
       </button>
 

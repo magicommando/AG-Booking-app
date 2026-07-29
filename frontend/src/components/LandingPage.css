@@ -29,7 +29,8 @@
 .hero-section {
   padding: 80px 20px;
   text-align: center;
-  background: url("/images/gunsmith-bg.jpg") center/cover no-repeat;
+  background: url("../assets/logo.png") center/cover no-repeat;
+  background-size: contain;
 }
 
 .hero-content h2 {
@@ -92,4 +93,20 @@
   background: #1a1a1a;
   border-top: 2px solid #333;
   margin-top: 40px;
+}
+
+.landing-services {
+  margin-top: 40px;
+}
+
+.landing-services h3 {
+  color: #c9a86a;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.landing-service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
 }

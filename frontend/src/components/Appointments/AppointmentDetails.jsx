@@ -1,3 +1,4 @@
+import FirearmCard from "../Firearms/FirearmCard";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAppState } from "../../state/AppState";
@@ -19,7 +20,8 @@ export default function AppointmentDetails() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setAppointment(res.data);
-      } catch (err) {
+      }
+       catch (err) {
         console.error("Error loading appointment:", err);
       } finally {
         setLoading(false);
@@ -37,6 +39,11 @@ export default function AppointmentDetails() {
   return (
     <div className="appt-container">
       <h2>Appointment Details</h2>
+
+      <FirearmCard
+        firearm={appointment.firearm}
+        showActions={false}
+      />
 
       <div className="appt-card">
         <h3>Service</h3>

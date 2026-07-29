@@ -1,0 +1,82 @@
+.apptcard {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.apptcard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.apptcard-header h3 {
+  color: #c9a86a;
+  margin: 0;
+}
+
+.apptcard-status {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background: #444;
+  color: #eee;
+}
+
+.status-in-progress {
+  background: #c9a86a;
+  color: #111;
+}
+
+.status-completed {
+  background: #2e662e;
+  color: #eee;
+}
+
+.apptcard-body {
+  margin-top: 15px;
+  color: #ccc;
+}
+
+.apptcard-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.apptcard-btn {
+  padding: 10px 16px;
+  background: #c9a86a;
+  color: #111;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.apptcard-btn:hover {
+  background: #d4b47a;
+}
+
+.apptcard-admin-btn {
+  background: #444;
+  color: #eee;
+}
+
+.apptcard-admin-btn:hover {
+  background: #555;
+}
+
+.apptcard-msg-btn {
+  background: #333;
+  color: #eee;
+}
+
+.apptcard-msg-btn:hover {
+  background: #444;
+}

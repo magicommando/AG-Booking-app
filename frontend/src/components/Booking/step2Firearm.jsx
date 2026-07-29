@@ -1,3 +1,4 @@
+import FirearmCard from "../Firearms/FirearmCard";
 import { useAppState, useAppDispatch } from "../../state/AppState";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +17,14 @@ export default function Step2Firearm() {
   return (
     <div className="booking-container">
       <h2>Select a Firearm</h2>
+
+      {firearms.map((f) => (
+        <FirearmCard
+          key={f._id}
+          firearm={f}
+          onSelect={() => selectFirearm(f)}
+        />
+      ))}
 
       {firearms.length === 0 && <p>You have no firearms registered.</p>}
 

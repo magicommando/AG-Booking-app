@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppState, useAppDispatch } from "../../state/AppState";
-import { uploadPhoto } from "../../api/ai";
+import { uploadPhoto } from "../../services/aiService";
 
 export default function AIPhotoUpload() {
   const { token, photoUrl } = useAppState();

@@ -1,7 +1,28 @@
-import { Link } from "react-router-dom";
+import ServiceCard from "./Services/ServiceCard";
+import { Link, useNavigate } from "react-router-dom";
 import "./LandingPage.css";
 
 export default function LandingPage() {
+  const navigate = useNavigate();
+
+  const featuredServices = [
+    {
+      name: "General Inspection",
+      description: "Full mechanical and safety inspection.",
+      price: 45
+    },
+    {
+      name: "Cleaning & Maintenance",
+      description: "Deep clean, lubrication, and reliability check.",
+      price: 60
+    },
+    {
+      name: "Trigger Work",
+      description: "Trigger smoothing, polishing, and tuning.",
+      price: 75
+    }
+  ];
+
   return (
     <div className="landing-container">
 
@@ -25,6 +46,20 @@ export default function LandingPage() {
             <Link to="/register" className="primary-btn">Get Started</Link>
             <Link to="/login" className="secondary-btn">Login</Link>
           </div>
+        </div>
+      </section>
+
+      <section className="landing-services">
+        <h3>Featured Services</h3>
+
+        <div className="landing-service-grid">
+          {featuredServices.map((service, index) => (
+            <ServiceCard
+              key={index}
+              service={service}
+              onSelect={() => navigate("/booking/service")}
+            />
+          ))}
         </div>
       </section>
 

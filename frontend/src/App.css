@@ -1,0 +1,15 @@
+.app-layout {
+  display: flex;
+}
+
+.app-content {
+  margin-left: 240px; /* sidebar width */
+  padding: 20px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .app-content {
+    margin-left: 0;
+  }
+}

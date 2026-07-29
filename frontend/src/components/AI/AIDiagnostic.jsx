@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppState, useAppDispatch } from "../../state/AppState";
-import { analyzeFirearm } from "../../api/ai";
+import { analyzeFirearm } from "../../services/aiService";
 
 export default function AIDiagnostic() {
   const { token, aiResult, photoUrl } = useAppState();

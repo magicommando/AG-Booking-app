@@ -1,3 +1,4 @@
+import ChatBubble from "./ChatBubble";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppState } from "../../state/AppState";
@@ -11,6 +12,7 @@ export default function ConversationView() {
   const [messages, setMessages] = useState([]);
   const [conversation, setConversation] = useState(null);
   const [text, setText] = useState("");
+  const [errorThread, setErrorThread] = useState(null);
 
   useEffect(() => {
     async function loadConversation() {
@@ -24,11 +26,14 @@ export default function ConversationView() {
         setMessages(res.data.messages);
       } catch (err) {
         console.error("Error loading conversation:", err);
+        setErrorThread("Failed to load conversation");
       }
     }
 
     loadConversation();
   }, [id, token]);
+
+  if (errorThread) return <p>{errorThread}</p>;
 
   async function sendMessage() {
     if (!text.trim()) return;
@@ -55,17 +60,11 @@ export default function ConversationView() {
 
       <div className="msg-thread">
         {messages.map((m) => (
-          <div
+          <ChatBubble
             key={m._id}
-            className={`msg-bubble ${
-              m.sender === user._id ? "msg-self" : "msg-other"
-            }`}
-          >
-            <p>{m.text}</p>
-            <span className="msg-time">
-              {new Date(m.createdAt).toLocaleString()}
-            </span>
-          </div>
+            message={m}
+            isSender={m.sender === user._id}
+          />
         ))}
       </div>
 

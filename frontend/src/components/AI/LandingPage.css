@@ -29,7 +29,8 @@
 .hero-section {
   padding: 80px 20px;
   text-align: center;
-  background: url("/images/gunsmith-bg.jpg") center/cover no-repeat;
+  background: url("../assets/logo.png") center/cover no-repeat;
+  background-size: contain;
 }
 
 .hero-content h2 {

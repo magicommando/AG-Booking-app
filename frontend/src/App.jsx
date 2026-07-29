@@ -1,76 +1,64 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+﻿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 
-// Global State
 import { AppStateProvider, useAppState, useAppDispatch } from "./state/AppState";
+import { BookingProvider } from "./state/BookingState";
 
-// Auth
+import Loader from "./components/UI/Loader";
+import ErrorBanner from "./components/UI/ErrorBanner";
+
 import Login from "./components/Auth/LoginPage";
 import Register from "./components/Auth/RegisterPage";
+import AdminRoute from "./routes/AdminRoute";
 
-// Navbar
 import Navbar from "./components/Layout/Navbar";
+import Sidebar from "./components/Layout/Sidebar";
 
-// Dashboard
-import ClientDashboard from "./components/Dashboard/ClientDashboard";
-
-// landing page
 import LandingPage from "./components/LandingPage";
+import ClientDashboard from "./components/Dashboard/ClientDashboard";
+import AdminDashboard from "./components/Dashboard/AdminDashboard";
 
-// Booking Steps
 import Step1Service from "./components/Booking/step1Service";
 import Step2Firearm from "./components/Booking/step2Firearm";
 import Step3DateTime from "./components/Booking/step3DateTime";
 import Step4Confirm from "./components/Booking/step4Confirm";
 
-// Appointment Details
 import AppointmentDetails from "./components/Appointments/AppointmentDetails";
+import ClientAppointmentList from "./components/Appointments/ClientAppointmentList";
+import AdminAppointmentList from "./components/Appointments/AdminAppointmentList";
 
-// Firearm Management
 import FirearmManager from "./components/Firearms/FirearmManager";
+import AdminFirearmList from "./components/Firearms/AdminFirearmList";
 
-// Message Center
+import InventoryManager from "./components/Inventory/InventoryManager";
+import InventoryTable from "./components/Inventory/InventoryTable";
+import InventoryItemForm from "./Pages/admin/InventoryItemForm";
+
 import MessageCenter from "./components/Messages/MessagingCenter";
 import ConversationView from "./components/Messages/ConversationView";
 
-// AI Tools
+import WorkOrderManager from "./components/WorkOrders/WorkOrderManager";
+import WorkOrderDetails from "./components/WorkOrders/WorkOrderDetails";
+
 import AIAnalyzer from "./components/AI/AIAnalyzer";
 import AIDiagnostic from "./components/AI/AIDiagnostic";
 import AIPhotoUpload from "./components/AI/AIPhotoUpload";
 import AIInventoryScan from "./components/AI/AIInventoryScan";
 import AIWorkOrderAssist from "./components/AI/AIWorkOrderAssist";
 
+import SettingsPage from "./components/Settings/SettingsPage";
 
-// -----------------------------
-// Protected Route Wrapper
-// -----------------------------
-// login route wrapper
 function ProtectedRoute({ children }) {
   const { token } = useAppState();
-
   if (!token) {
     return <Navigate to="/login" replace />;
   }
-
   return children;
 }
 
-//  admin route/gunsmith wrapper
-function AdminRoute({ children }) {
-  const { token, role } = useAppState();
-  if (!token || role !== "gunsmith") return <Navigate to="/dashboard" replace />;
-  return children;
-}
-
-
-// -----------------------------
-// Main App Router
-// -----------------------------
 function AppRouter() {
-  const { token } = useAppState();
   const dispatch = useAppDispatch();
 
-  // Load token from localStorage on startup
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     if (savedToken) {
@@ -80,17 +68,9 @@ function AppRouter() {
 
   return (
     <Routes>
-
-      {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
-      {/* Landing Page */}
       <Route path="/" element={<LandingPage />} />
-
-    
-
-      {/* ClientDashboard */}
       <Route
         path="/dashboard"
         element={
@@ -99,8 +79,6 @@ function AppRouter() {
           </ProtectedRoute>
         }
       />
-
-      {/* Admin Dashboard */}
       <Route
         path="/admin/dashboard"
         element={
@@ -109,131 +87,158 @@ function AppRouter() {
           </AdminRoute>
         }
       />
-
-      {/* Booking Steps */}
-        <Route
-         path="/booking/service"
-          element={
+      <Route
+        path="/admin/firearms"
+        element={
+          <AdminRoute>
+            <AdminFirearmList />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/booking/service"
+        element={
           <ProtectedRoute>
             <Step1Service />
           </ProtectedRoute>
         }
       />
-        <Route
-         path="/booking/firearm"
-          element={
+      <Route
+        path="/booking/firearm"
+        element={
           <ProtectedRoute>
             <Step2Firearm />
           </ProtectedRoute>
-        } 
+        }
       />
-        <Route
-         path="/booking/datetime"
-          element={
+      <Route
+        path="/booking/datetime"
+        element={
           <ProtectedRoute>
             <Step3DateTime />
           </ProtectedRoute>
-        } 
+        }
       />
-        <Route
-         path="/booking/confirm"
-          element={
+      <Route
+        path="/booking/confirm"
+        element={
           <ProtectedRoute>
             <Step4Confirm />
           </ProtectedRoute>
-        } 
+        }
       />
-
-        {/* Appointment Details */}
-        <Route
-          path="/appointments/:id"
-          element={
-            <ProtectedRoute>
-              <AppointmentDetails />
-            </ProtectedRoute>
-          }
+      <Route
+        path="/appointments/:id"
+        element={
+          <ProtectedRoute>
+            <AppointmentDetails />
+          </ProtectedRoute>
+        }
       />
-
-        {/* Firearm Management */}
-        <Route
-          path="/firearms"
-          element={
-            <ProtectedRoute>
-              <FirearmManager />
-            </ProtectedRoute>
-          }
+      <Route
+        path="/appointments"
+        element={
+          <ProtectedRoute>
+            <ClientAppointmentList />
+          </ProtectedRoute>
+        }
       />
-
-          {/* Inventory Management */}
-          <Route
-            path="/inventory"
-            element={
-              <AdminRoute>
-                <InventoryManager />
-              </AdminRoute>
-            }
+      <Route
+        path="/admin/appointments"
+        element={
+          <AdminRoute>
+            <AdminAppointmentList />
+          </AdminRoute>
+        }
       />
-
-
-        {/* Message Center */}
-        <Route
-          path="/messages"
-          element={
-            <ProtectedRoute>
-              <MessageCenter />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/messages/:conversationId"
-          element={
-            <ProtectedRoute>
-              <ConversationView />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Work Order Manager */}
-        <Route
-          path="/admin/workorders"
-          element={
-            <AdminRoute>
-              <WorkOrderManager />
-            </AdminRoute>
-          }
-        />
-
-        {/* Work Order Details */}
-        <Route
-          path="/admin/workorders/:id"
-          element={
-            <AdminRoute>
-              <WorkOrderDetails />
-            </AdminRoute>
-          }
-        />
-
-        {/* AI Analyzer */}
-        <Route
-          path="/ai/analyze"
-          element={
-            <ProtectedRoute>
-              <AIAnalyzer />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* AI Diagnostic */}
-        <Route
-          path="/ai/diagnostic"
-          element={
-            <ProtectedRoute>
-              <AIDiagnostic />
-            </ProtectedRoute>
-          }
-        />
-
-      {/* AI Photo Upload */}
+      <Route
+        path="/firearms"
+        element={
+          <ProtectedRoute>
+            <FirearmManager />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/inventory"
+        element={
+          <AdminRoute>
+            <InventoryManager />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/inventory/table"
+        element={
+          <AdminRoute>
+            <InventoryTable />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/inventory/new"
+        element={
+          <AdminRoute>
+            <InventoryItemForm />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/inventory/edit/:id"
+        element={
+          <AdminRoute>
+            <InventoryItemForm />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/messages"
+        element={
+          <ProtectedRoute>
+            <MessageCenter />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/messages/:conversationId"
+        element={
+          <ProtectedRoute>
+            <ConversationView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/workorders"
+        element={
+          <AdminRoute>
+            <WorkOrderManager />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/workorders/:id"
+        element={
+          <AdminRoute>
+            <WorkOrderDetails />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/ai/analyze"
+        element={
+          <ProtectedRoute>
+            <AIAnalyzer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ai/diagnostic"
+        element={
+          <ProtectedRoute>
+            <AIDiagnostic />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/ai/photo"
         element={
@@ -242,8 +247,6 @@ function AppRouter() {
           </ProtectedRoute>
         }
       />
-
-      {/* AI Inventory Scan */}
       <Route
         path="/ai/inventory"
         element={
@@ -252,8 +255,6 @@ function AppRouter() {
           </ProtectedRoute>
         }
       />
-
-      {/* AI WorkOrder Auto‑Assist */}
       <Route
         path="/ai/workorder"
         element={
@@ -262,8 +263,6 @@ function AppRouter() {
           </ProtectedRoute>
         }
       />
-
-      {/* Settings */}
       <Route
         path="/settings"
         element={
@@ -272,22 +271,24 @@ function AppRouter() {
           </ProtectedRoute>
         }
       />
-
     </Routes>
   );
 }
 
-
-// -----------------------------
-// App Wrapper with Global State
-// -----------------------------
 export default function App() {
   return (
-    <AppStateProvider>
-      <BrowserRouter>
-        <Navbar />
-        <AppRouter />
-      </BrowserRouter>
-    </AppStateProvider>
+    <BookingProvider>
+      <AppStateProvider>
+        <BrowserRouter>
+          <Navbar />
+          <div className="app-layout">
+            <Sidebar />
+            <div className="app-content">
+              <AppRouter />
+            </div>
+          </div>
+        </BrowserRouter>
+      </AppStateProvider>
+    </BookingProvider>
   );
 }

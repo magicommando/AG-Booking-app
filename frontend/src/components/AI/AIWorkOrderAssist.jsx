@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useAppState, useAppDispatch } from "../../state/AppState";
-import { autoFillWorkOrder } from "../../api/ai";
+import { autoFillWorkOrder } from "../../services/aiService";
 
 export default function AIWorkOrderAssist() {
   const { token, aiResult } = useAppState();

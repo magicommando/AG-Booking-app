@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppState, useAppDispatch } from "../../state/AppState";
-import { scanInventory } from "../../api/ai";
+import { scanInventory } from "../../services/aiService";
 
 export default function AIInventoryScan() {
   const { token, inventoryItems } = useAppState();
