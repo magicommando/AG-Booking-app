@@ -36,7 +36,7 @@ export default function AdminFirearmList() {
 
     if (search.trim()) {
       list = list.filter((f) =>
-        `${f.make} ${f.model} ${f.serial}`
+        `${f.make || f.manufacturer || ""} ${f.model || ""} ${f.serial || ""}`
           .toLowerCase()
           .includes(search.toLowerCase())
       );
@@ -82,6 +82,7 @@ export default function AdminFirearmList() {
           <FirearmCard
             key={f._id}
             firearm={f}
+            showClientInfo
             showActions={false}
             onSelect={() => navigate(`/admin/firearms/${f._id}`)}
           />

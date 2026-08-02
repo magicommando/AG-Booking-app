@@ -1,0 +1,132 @@
+.admin-schedule-container {
+  padding: 40px;
+  color: #c9a86a;
+  text-shadow: 0 0 6px rgba(0, 255, 255, 0.15);
+  background:
+    linear-gradient(rgba(8, 8, 8, 0.45), rgba(8, 8, 8, 0.45)),
+    url("../../assets/Schedule-availability-bg.png") center / cover no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.admin-select,
+.admin-date {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  background: #111;
+  border: 1px solid #333;
+  color: #eee;
+  border-radius: 6px;
+}
+
+.admin-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.admin-slot-btn {
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  min-height: 44px;
+}
+
+.available {
+  background: #c9a86a;
+  color: #111;
+}
+
+.unavailable {
+  background: #333;
+  color: #777;
+  opacity: 0.5;
+}
+
+.booked {
+  background: #365a8f;
+  color: #e7efff;
+}
+
+.admin-selected-day {
+  margin: 12px 0;
+  color: #d5c18e;
+}
+
+.admin-schedule-message {
+  color: #9ce8b0;
+}
+
+.admin-schedule-error {
+  color: #ff9d9d;
+}
+
+.admin-save-btn {
+  padding: 12px 20px;
+  background: #c9a86a;
+  color: #111;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+@media (max-width: 900px) {
+  .admin-schedule-container {
+    padding: 28px 22px;
+    background-attachment: scroll;
+    background-position: center top;
+  }
+
+  .admin-slot-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-schedule-container {
+    padding: 20px 14px;
+  }
+
+  .admin-slot-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .admin-slot-btn {
+    padding: 10px;
+    font-size: 0.9rem;
+    min-height: 42px;
+  }
+
+  .admin-save-btn {
+    width: 100%;
+    min-height: 42px;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-schedule-container {
+    padding: 14px 10px;
+  }
+
+  .admin-slot-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-slot-btn {
+    min-height: 40px;
+    font-size: 0.85rem;
+  }
+
+  .admin-select,
+  .admin-date,
+  .admin-save-btn {
+    min-height: 42px;
+  }
+}

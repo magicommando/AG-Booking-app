@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
@@ -21,9 +22,15 @@ const connectToMongo = require('./backend/config/db');
 // create express app
 const app = express();
 
+const uploadsDir = path.resolve(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // global middleware
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(uploadsDir));
 
 // Routes
 const authRoutes = require('./backend/routes/authRoutes');
@@ -35,6 +42,7 @@ const appointmentRoutes = require('./backend/routes/appointmentRoutes');
 const workOrderRoutes = require('./backend/routes/workOrderRoutes');
 const inventoryRoutes = require('./backend/routes/inventoryRoutes');
 const messageRoutes = require('./backend/routes/messageRoutes');
+const scheduleRoutes = require('./backend/routes/scheduleRoutes');
 const errorHandler = require('./backend/middleware/errorHandler');
 
 // Mount routes
@@ -47,6 +55,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/workorders', workOrderRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/schedule', scheduleRoutes);
 app.use(errorHandler);
 
 // Root test route to check if the server is running and MongoDB connection status

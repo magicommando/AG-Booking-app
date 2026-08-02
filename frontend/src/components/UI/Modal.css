@@ -58,6 +58,7 @@
   background: #c9a86a;
   color: #111;
   padding: 10px 18px;
+  min-height: 42px;
   border-radius: 6px;
   border: none;
   font-weight: bold;
@@ -75,4 +76,27 @@
 
 .modal-btn.danger:hover {
   background: #c44;
+}
+
+@media (max-width: 420px) {
+  .modal-window {
+    width: min(94vw, 420px);
+    padding: 16px;
+  }
+
+  .modal-title {
+    font-size: 20px;
+  }
+
+  .modal-body {
+    font-size: 14px;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .modal-btn {
+    width: 100%;
+  }
 }

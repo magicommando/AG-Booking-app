@@ -1,72 +1,128 @@
 .settings-container {
-  padding: 40px;
-  background: #111;
+  padding: 20px;
+
+  /* Mechanical workshop background */
+  background:
+    linear-gradient(rgba(10, 10, 10, 0.55), rgba(10, 10, 10, 0.55)),
+    url("../../assets/Settings-bg.png") center / cover no-repeat;
+
+  background-attachment: fixed;
   color: #eee;
   min-height: 100vh;
 }
 
+/* Page Title */
 .settings-container h2 {
   text-align: center;
   color: #c9a86a;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+  text-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
 }
 
+/* Message Box */
 .settings-message {
   text-align: center;
-  background: #333;
-  padding: 10px;
+  background: rgba(40, 40, 40, 0.85);
+  padding: 12px;
   border-radius: 6px;
-  margin-bottom: 20px;
-}
-
-.settings-card {
-  background: #1a1a1a;
-  padding: 25px;
-  border-radius: 8px;
+  margin-bottom: 25px;
   border: 1px solid #333;
-  margin-bottom: 20px;
+  backdrop-filter: blur(3px);
 }
 
+/* Card Container */
+.settings-card {
+  background: rgba(26, 26, 26, 0.78);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 168, 106, 0.35);
+  margin-bottom: 25px;
+
+  /* Subtle workshop glow */
+  box-shadow:
+    0 0 10px rgba(0, 255, 255, 0.15),
+    inset 0 0 6px rgba(0, 255, 255, 0.08);
+
+  backdrop-filter: blur(4px);
+}
+
+/* Card Title */
 .settings-card h3 {
   color: #c9a86a;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
 }
 
+/* Inputs */
 .settings-card input,
 .settings-card select {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
+  min-height: 42px;
   margin-bottom: 15px;
-  background: #111;
+  background: rgba(15, 15, 15, 0.9);
   border: 1px solid #333;
   color: #eee;
   border-radius: 6px;
+  transition: 0.25s ease;
 }
 
+.settings-card input:focus,
+.settings-card select:focus {
+  border-color: #c9a86a;
+  box-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
+}
+
+/* Save Button */
 .settings-btn {
   padding: 12px 20px;
+  min-height: 42px;
   background: #c9a86a;
   color: #111;
   border-radius: 6px;
   border: none;
   cursor: pointer;
   font-weight: bold;
+  transition: 0.25s ease;
 }
 
 .settings-btn:hover {
   background: #d4b47a;
+  box-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
 }
 
+/* Danger Button */
 .settings-danger-btn {
   padding: 12px 20px;
+  min-height: 42px;
   background: #661111;
   color: #eee;
   border-radius: 6px;
   border: none;
   cursor: pointer;
   font-weight: bold;
+  transition: 0.25s ease;
 }
 
 .settings-danger-btn:hover {
   background: #7a1a1a;
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.35);
+}
+
+@media (max-width: 640px) {
+  .settings-container {
+    padding: 14px;
+    background-attachment: scroll;
+  }
+
+  .settings-btn,
+  .settings-danger-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-container h2 {
+    font-size: 24px;
+  }
 }

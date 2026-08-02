@@ -1,20 +1,72 @@
 .sidebar {
-  width: 95px;
-  background: #1a1a1a;
-  border-right: 2px solid #333;
+  width: 220px;
+  flex: 0 0 220px;
+  flex-shrink: 0;
+  background: url("../../assets/Sidebar-bg.png") center / cover no-repeat;
+  border-right: 2px solid rgba(201, 168, 106, 0.45);
   color: #eee;
   padding: 20px;
-  min-height: 100vh;
-  position: fixed;
-  top: 60px; /* height of navbar */
+  height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px);
+  position: sticky;
+  top: 0;
   left: 0;
+  backdrop-filter: blur(4px);
+  overflow-x: hidden;
+  overflow-y: auto; /* keeps image size stable while allowing long menus to scroll */
+
+  /* Glow + depth */
+  box-shadow:
+    0 0 12px rgba(0, 255, 255, 0.25),
+    inset 0 0 10px rgba(0, 255, 255, 0.15);
+  animation: sidebarPulse 7s ease-in-out infinite alternate;
+}
+
+/* Vignette applied ONLY to background */
+.sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0) 5%,
+    rgba(0, 0, 0, 0.45) 20%
+  );
+  z-index: 0; /* stays behind content */
+  pointer-events: none;
+}
+
+/* Sidebar content stays above vignette */
+.sidebar-title,
+.sidebar-links {
+  position: relative;
+  z-index: 1;
+}
+
+
+@keyframes sidebarPulse {
+  from {
+    box-shadow:
+      0 0 8px rgba(0, 255, 255, 0.18),
+      inset 0 0 6px rgba(0, 255, 255, 0.12);
+    border-right-color: rgba(201, 168, 106, 0.45);
+  }
+  to {
+    box-shadow:
+      0 0 16px rgba(0, 255, 255, 0.35),
+      inset 0 0 12px rgba(0, 255, 255, 0.25);
+    border-right-color: rgba(201, 168, 106, 0.75);
+  }
 }
 
 .sidebar-title {
-  font-size: 20px;
+  font-size: 1.05rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
   font-weight: bold;
-  color: #c9a86a;
+  color: #fbd183;
   margin-bottom: 20px;
+  text-shadow: 0 0 10px rgba(201, 168, 106, 0.35);
 }
 
 .sidebar-links {
@@ -23,32 +75,54 @@
   gap: 12px;
 }
 
+/* Ambient cyan glow + pulse */
 .sidebar-links a {
-  color: #eee;
+  color: #fffbfb;
   text-decoration: none;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border-radius: 6px;
-  transition: 0.2s;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  transition: 0.25s ease;
+  border: 1px solid transparent;
+
+  text-shadow:
+    0 0 4px rgba(0, 255, 255, 0.25),
+    0 0 8px rgba(0, 255, 255, 0.15);
+
+  animation: linkPulse 1s ease-in-out infinite alternate;
 }
 
+@keyframes linkPulse {
+  from {
+    text-shadow:
+      0 0 4px rgba(0, 255, 255, 0.25);
+  }
+  to {
+    text-shadow:
+      0 0 8px rgba(0, 255, 255, 0.35);
+  }
+}
+
+/* Hover glow */
 .sidebar-links a:hover {
-  background: #333;
+  background: rgba(40, 40, 40, 0.85);
   color: #c9a86a;
+  border-color: rgba(201, 168, 106, 0.45);
+  box-shadow:
+    0 0 10px rgba(201, 168, 106, 0.35),
+    0 0 14px rgba(0, 255, 255, 0.35);
+  transform: translateY(-1px);
+
+  text-shadow:
+    0 0 6px rgba(0, 255, 255, 0.55),
+    0 0 12px rgba(0, 255, 255, 0.35);
 }
 
 /* Mobile collapse */
 @media (max-width: 900px) {
   .sidebar {
-    position: static;
-    width: 100%;
-    min-height: auto;
-    border-right: none;
-    border-bottom: 2px solid #333;
-  }
-
-  .sidebar-links {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
+    display: none;
   }
 }

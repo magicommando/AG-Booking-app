@@ -34,10 +34,11 @@ export default function Login() {
       dispatch({ type: "SET_ROLE", payload: user.role });
 
       localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-      navigate("/dashboard");
+      navigate(user.role === "gunsmith" || user.role === "admin" ? "/admin/dashboard" : "/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || err.response?.data?.error || "Login failed");
     }
   }
 

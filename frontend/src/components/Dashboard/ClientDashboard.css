@@ -1,8 +1,23 @@
 .clientdash-container {
-  padding: 40px;
+  position: relative;
+  padding: 10px;
   color: #eee;
-  background: #111;
+  background: url("../../assets/Client-Dash-bg.png") center / cover no-repeat;
+  background-attachment: fixed;
   min-height: 100vh;
+}
+
+.clientdash-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(8, 8, 8, 0.2) 0%, rgba(8, 8, 8, 0.65) 100%);
+  z-index: 0;
+}
+
+.clientdash-container > * {
+  position: relative;
+  z-index: 1;
 }
 
 .clientdash-header {
@@ -27,11 +42,40 @@
 }
 
 .clientdash-card {
-  background: #1a1a1a;
+  background: rgba(26, 26, 26, 0.7);
   padding: 25px;
   border-radius: 8px;
   border: 1px solid #333;
   text-align: center;
+  backdrop-filter: blur(4px);
+  position: relative;
+  overflow: hidden;
+}
+
+.clientdash-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 120%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(201, 168, 106, 0.25) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: all 0.8s ease;
+  pointer-events: none;
+}
+
+.clientdash-card:hover {
+  border-color: #c9a86a;
+  box-shadow: 0 0 12px rgba(201, 168, 106, 0.35);
+}
+.clientdash-card:hover::before {
+  left: 150%;
 }
 
 .clientdash-card h3 {
@@ -56,4 +100,56 @@
 
 .clientdash-btn:hover {
   background: #d4b47a;
+}
+
+@media (max-width: 720px) {
+  .clientdash-container {
+    padding: 16px 12px;
+    background-attachment: scroll;
+  }
+
+  .clientdash-header {
+    margin-bottom: 24px;
+  }
+
+  .clientdash-header h2 {
+    font-size: 26px;
+  }
+
+  .clientdash-subtitle {
+    font-size: 15px;
+  }
+
+  .clientdash-grid {
+    gap: 14px;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .clientdash-container {
+    padding: 14px 10px;
+  }
+
+  .clientdash-header h2 {
+    font-size: 24px;
+  }
+
+  .clientdash-subtitle {
+    font-size: 14px;
+  }
+
+  .clientdash-card {
+    padding: 16px;
+  }
+
+  .clientdash-card p {
+    font-size: 14px;
+  }
+
+  .clientdash-btn {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+  }
 }

@@ -2,11 +2,12 @@ const mongoose = require('mongoose');
 
 const appointmentSchema = new mongoose.Schema({
   clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  gunsmithId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  gunsmithId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   firearmId: { type: mongoose.Schema.Types.ObjectId, ref: 'Firearm', required: true },
-  serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true },
+  serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
+  serviceType: { type: String },
   date: { type: Date, required: true },
-  status: { type: String, enum: ['pending', 'approved', 'denied', 'completed'], default: 'pending' },
+  status: { type: String, enum: ['pending', 'approved', 'denied', 'completed', 'cancelled'], default: 'pending' },
   aiSummary: { type: String },
   notes: { type: String },
   createdAt: { type: Date, default: Date.now }

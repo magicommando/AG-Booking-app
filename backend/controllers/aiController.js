@@ -1,15 +1,20 @@
 const AILog = require('../models/AILog');
 const aiEngine = require('../ai/aiEngine');
+const mongoose = require('mongoose');
 // ai analysis controller functions
 exports.analyzeFirearm = async (req, res) => {
   try {
-    const { userId, firearmId, inputText, photoUrl } = req.body;
+    const { firearmId, inputText, photoUrl } = req.body;
 
     const aiResult = aiEngine.analyzeFirearmIssue(inputText, photoUrl);
 
+    const safeFirearmId = mongoose.Types.ObjectId.isValid(firearmId)
+      ? firearmId
+      : undefined;
+
     const log = await AILog.create({
-      userId,
-      firearmId,
+      userId: req.user.userId,
+      firearmId: safeFirearmId,
       inputText,
       photoUrl,
       aiResponse: JSON.stringify(aiResult)
@@ -54,8 +59,62 @@ exports.scanInventory = async (req, res) => {
 // auto-fill work order based on AI analysis (gunsmith only)
 exports.autoFillWorkOrder = async (req, res) => {
   try {
-    // Milestone 6 will wire this to WorkOrder; for now just echo
-    res.json({ message: 'Work order auto-fill placeholder' });
+    const aiData = req.body?.aiData;
+
+    if (!aiData || typeof aiData !== 'object') {
+      return res.status(400).json({ message: 'aiData payload is required' });
+    }
+
+    const diagnostics = Array.isArray(aiData.diagnostics)
+      ? aiData.diagnostics
+      : (typeof aiData.diagnostics === 'string' ? [aiData.diagnostics] : []);
+
+    const recommendations = Array.isArray(aiData.recommendations)
+      ? aiData.recommendations
+      : (typeof aiData.recommendations === 'string' ? [aiData.recommendations] : []);
+
+    const partsNeeded = Array.isArray(aiData.parts)
+      ? aiData.parts.filter((p) => typeof p === 'string' && p.trim())
+      : [];
+
+    const laborTime = Number.isFinite(Number(aiData.laborTime))
+      ? Number(aiData.laborTime)
+      : 0;
+    const preferredFirearmId = typeof aiData.firearmId === 'string' ? aiData.firearmId : undefined;
+    const preferredClientId = typeof aiData.clientId === 'string' ? aiData.clientId : undefined;
+    const preferredClientName = typeof aiData.clientName === 'string' ? aiData.clientName : undefined;
+
+    const noteBlocks = [];
+    if (diagnostics.length > 0) {
+      noteBlocks.push(`Diagnostics:\n- ${diagnostics.join('\n- ')}`);
+    }
+
+    if (recommendations.length > 0) {
+      noteBlocks.push(`Recommendations:\n- ${recommendations.join('\n- ')}`);
+    }
+
+    if (typeof aiData.photoUrl === 'string' && aiData.photoUrl.trim()) {
+      noteBlocks.push(`Photo Reference: ${aiData.photoUrl}`);
+    }
+
+    const draft = {
+      progress: 'not started',
+      partsNeeded,
+      estimatedTime: laborTime,
+      notes: noteBlocks.join('\n\n'),
+      invoice: {
+        laborTime
+      },
+      source: 'ai-autofill',
+      preferredFirearmId,
+      preferredClientId,
+      preferredClientName
+    };
+
+    res.json({
+      message: 'Work order draft auto-filled',
+      draft
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -88,6 +147,16 @@ exports.getUserAIHistory = async (req, res) => {
     }
 
     const logs = await AILog.find({ userId }).sort({ createdAt: -1 });
+    res.json(logs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// get AI analysis history for the authenticated user
+exports.getMyAIHistory = async (req, res) => {
+  try {
+    const logs = await AILog.find({ userId: req.user.userId }).sort({ createdAt: -1 });
     res.json(logs);
   } catch (err) {
     res.status(500).json({ error: err.message });

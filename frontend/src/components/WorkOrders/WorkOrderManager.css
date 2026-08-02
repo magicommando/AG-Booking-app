@@ -1,14 +1,75 @@
 .wo-container {
   padding: 40px;
-  background: #111;
+  background:
+    linear-gradient(rgba(8, 8, 8, 0.6), rgba(8, 8, 8, 0.6)),
+    url("../../assets/Workorder-bg.png") center / cover no-repeat;
+  background-attachment: fixed;
+  background-size: 120% 120%;
   color: #eee;
   min-height: 100vh;
+  backdrop-filter: blur(2px);
 }
 
+/* Header */
 .wo-container h2 {
   text-align: center;
   color: #c9a86a;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  text-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
+}
+
+/* Create Section */
+.wo-create-section {
+  background: rgba(26, 26, 26, 0.78);
+  border: 1px solid rgba(201, 168, 106, 0.35);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow:
+    0 0 10px rgba(0, 255, 255, 0.15),
+    inset 0 0 6px rgba(0, 255, 255, 0.08);
+}
+
+.wo-create-section h3 {
+  color: #c9a86a;
+  margin-bottom: 12px;
+  text-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
+}
+
+/* Ready Grid */
+.wo-ready-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.wo-ready-card {
+  background: rgba(15, 15, 15, 0.9);
+  border: 1px solid rgba(201, 168, 106, 0.25);
+  border-radius: 8px;
+  padding: 16px;
+  transition: 0.25s ease;
+}
+
+.wo-ready-card:hover {
+  background: rgba(35, 35, 35, 0.85);
+  box-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
+}
+
+/* Error Message */
+.wo-error {
+  color: #ff7f7f;
+  margin-bottom: 10px;
+}
+
+.wo-success {
+  color: #9ff3b8;
+  margin-bottom: 10px;
+}
+
+.wo-draft-tip {
+  color: #cbe7df;
+  margin-bottom: 10px;
 }
 
 /* Filters */
@@ -20,19 +81,26 @@
 
 .wo-filters button {
   padding: 10px 20px;
-  background: #333;
+  background: rgba(26, 26, 26, 0.85);
   color: #eee;
   border-radius: 6px;
-  border: none;
+  border: 1px solid #333;
   cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.wo-filters button:hover {
+  background: rgba(40, 40, 40, 0.9);
+  box-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
 }
 
 .wo-filter-active {
   background: #c9a86a !important;
   color: #111 !important;
+  box-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
 }
 
-/* Grid */
+/* Work Order Grid */
 .wo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -40,15 +108,26 @@
 }
 
 .wo-card {
-  background: #1a1a1a;
+  background: rgba(26, 26, 26, 0.78);
   padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #333;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 168, 106, 0.35);
+  box-shadow:
+    0 0 10px rgba(0, 255, 255, 0.15),
+    inset 0 0 6px rgba(0, 255, 255, 0.08);
+  transition: 0.25s ease;
+}
+
+.wo-card:hover {
+  background: rgba(35, 35, 35, 0.85);
+  box-shadow: 0 0 10px rgba(201, 168, 106, 0.35);
 }
 
 .wo-card h3 {
   color: #c9a86a;
   margin-bottom: 10px;
+  text-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
+  word-break: break-word;
 }
 
 /* Status Badges */
@@ -56,8 +135,10 @@
   padding: 4px 10px;
   border-radius: 6px;
   font-weight: bold;
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.15);
 }
 
+.wo-not-started,
 .wo-pending {
   background: #444;
   color: #eee;
@@ -73,7 +154,7 @@
   color: #eee;
 }
 
-/* Button */
+/* Buttons */
 .wo-btn {
   display: inline-block;
   margin-top: 15px;
@@ -83,8 +164,72 @@
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
+  transition: 0.25s ease;
 }
 
 .wo-btn:hover {
   background: #d4b47a;
+  box-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
+}
+
+.wo-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.wo-btn-secondary {
+  margin-left: 10px;
+  background: rgba(18, 28, 26, 0.9);
+  color: #cbe7df;
+  border: 1px solid rgba(141, 247, 208, 0.45);
+}
+
+.wo-btn-secondary:hover {
+  background: rgba(31, 45, 42, 0.95);
+  box-shadow: 0 0 8px rgba(141, 247, 208, 0.35);
+}
+
+@media (max-width: 720px) {
+  .wo-container {
+    padding: 20px 14px;
+    background-size: cover;
+    background-position: center top;
+    background-attachment: scroll;
+  }
+
+  .wo-filters {
+    flex-wrap: wrap;
+  }
+
+  .wo-filters button {
+    flex: 1 1 140px;
+  }
+
+  .wo-grid,
+  .wo-ready-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .wo-container {
+    padding: 14px 10px;
+  }
+
+  .wo-create-section,
+  .wo-card,
+  .wo-ready-card {
+    padding: 14px;
+  }
+
+  .wo-btn,
+  .wo-btn-secondary {
+    width: 100%;
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .wo-filters button {
+    flex-basis: 100%;
+  }
 }

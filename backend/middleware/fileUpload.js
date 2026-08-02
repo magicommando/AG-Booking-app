@@ -2,6 +2,13 @@
 
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+const uploadDir = path.resolve(process.cwd(), 'uploads');
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Allowed image types
 const allowedTypes = ['.jpg', '.jpeg', '.png', '.webp'];
@@ -9,7 +16,7 @@ const allowedTypes = ['.jpg', '.jpeg', '.png', '.webp'];
 // Storage configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Ensure this folder exists in your project root
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);

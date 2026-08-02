@@ -16,13 +16,15 @@ router.post(
   aiController.uploadPhoto
 );
 
-router.post('/firearm', auth, allow(['gunsmith']), validate(aiSchemas.analyzeFirearm), aiController.analyzeFirearm);
+router.post('/firearm', auth, allow(['gunsmith', 'client']), validate(aiSchemas.analyzeFirearm), aiController.analyzeFirearm);
 
 router.post('/inventory-scan', auth, allow(['gunsmith']), validate(aiSchemas.inventoryScan), aiController.scanInventory);
 
 router.post('/work-order', auth, allow(['gunsmith']), aiController.autoFillWorkOrder);
 
 router.post('/', auth, allow(['client', 'gunsmith']), validate(aiSchemas.saveAnalysis), aiController.saveAIAnalysis);
+
+router.get('/logs/me', auth, allow(['client', 'gunsmith', 'admin']), aiController.getMyAIHistory);
 
 router.get('/:userId', auth, allow(['client', 'gunsmith']), aiController.getUserAIHistory);
 

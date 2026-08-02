@@ -8,7 +8,7 @@ import "./FirearmManager.css";
 
 export default function FirearmManager() {
   const navigate = useNavigate();
-  const { token, user } = useAppState();
+  const { token } = useAppState();
 
   const [firearms, setFirearms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,10 +48,10 @@ export default function FirearmManager() {
 
     if (firearm) {
       setForm({
-        make: firearm.make,
+        make: firearm.make || firearm.manufacturer || "",
         model: firearm.model,
-        serial: firearm.serial,
-        type: firearm.type
+        serial: firearm.serial || firearm.serialNumber || "",
+        type: firearm.type || ""
       });
     } else {
       setForm({ make: "", model: "", serial: "", type: "" });
@@ -64,21 +64,24 @@ export default function FirearmManager() {
   async function saveFirearm() {
     try {
       if (editFirearm) {
-        await axios.put(
+        const res = await axios.put(
           `http://localhost:5000/api/firearms/${editFirearm._id}`,
           form,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        setFirearms((prev) => prev.map((f) => (f._id === editFirearm._id ? res.data.firearm : f)));
       } else {
-        await axios.post(
+        const res = await axios.post(
           "http://localhost:5000/api/firearms",
           form,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        setFirearms((prev) => [res.data.firearm, ...prev]);
       }
 
       setModalOpen(false);
-      window.location.reload(); // refresh list
+      setEditFirearm(null);
+      setForm({ make: "", model: "", serial: "", type: "" });
     } catch (err) {
       console.error("Error saving firearm:", err);
     }
@@ -103,7 +106,7 @@ export default function FirearmManager() {
   if (loading) return <div className="fm-container">Loading...</div>;
 
   return (
-    <div className="firearm-container">
+    <div className="fm-container">
       <h2>Your Firearms</h2>
 
       {firearms.map((f) => (
@@ -114,14 +117,14 @@ export default function FirearmManager() {
         />
       ))}
       
-      <button className="firearm-add-btn" onClick={() => openModal()}>
+      <button className="fm-add-btn" onClick={() => openModal()}>
         + Add Firearm
       </button>
 
       <div className="fm-grid">
         {firearms.map((f) => (
           <div key={f._id} className="fm-card">
-            <h3>{f.make} {f.model}</h3>
+            <h3>{f.make || f.manufacturer} {f.model}</h3>
             <p><strong>Serial:</strong> {f.serial}</p>
             <p><strong>Type:</strong> {f.type}</p>
 

@@ -1,11 +1,9 @@
-﻿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import "./App.css";
 
 import { AppStateProvider, useAppState, useAppDispatch } from "./state/AppState";
 import { BookingProvider } from "./state/BookingState";
-
-import Loader from "./components/UI/Loader";
-import ErrorBanner from "./components/UI/ErrorBanner";
 
 import Login from "./components/Auth/LoginPage";
 import Register from "./components/Auth/RegisterPage";
@@ -17,22 +15,27 @@ import Sidebar from "./components/Layout/Sidebar";
 import LandingPage from "./components/LandingPage";
 import ClientDashboard from "./components/Dashboard/ClientDashboard";
 import AdminDashboard from "./components/Dashboard/AdminDashboard";
+import AdminLogs from "./components/Dashboard/AdminLogs";
 
-import Step1Service from "./components/Booking/step1Service";
-import Step2Firearm from "./components/Booking/step2Firearm";
-import Step3DateTime from "./components/Booking/step3DateTime";
-import Step4Confirm from "./components/Booking/step4Confirm";
+import ServicePage from "./Pages/booking/ServicePage";
+import FirearmPage from "./Pages/booking/FirearmPage";
+import DateAndTimePage from "./Pages/booking/DateAndTimePage";
+import ConfirmPage from "./Pages/booking/ConfirmPage";
+import SuccessPage from "./Pages/booking/SuccessPage";
 
 import AppointmentDetails from "./components/Appointments/AppointmentDetails";
 import ClientAppointmentList from "./components/Appointments/ClientAppointmentList";
-import AdminAppointmentList from "./components/Appointments/AdminAppointmentList";
+import AdminBookingList from "./components/Booking/AdminBookingList";
+import AdminBookingDetails from "./components/Booking/AdminBookingDetails";
+import AdminSchedule from "./components/Booking/AdminSchedule";
 
 import FirearmManager from "./components/Firearms/FirearmManager";
 import AdminFirearmList from "./components/Firearms/AdminFirearmList";
+import FirearmDetails from "./components/Firearms/FirearmDetails";
 
 import InventoryManager from "./components/Inventory/InventoryManager";
 import InventoryTable from "./components/Inventory/InventoryTable";
-import InventoryItemForm from "./Pages/admin/InventoryItemForm";
+import InventoryItemForm from "./components/Inventory/InventoryItemForm";
 
 import MessageCenter from "./components/Messages/MessagingCenter";
 import ConversationView from "./components/Messages/ConversationView";
@@ -41,10 +44,6 @@ import WorkOrderManager from "./components/WorkOrders/WorkOrderManager";
 import WorkOrderDetails from "./components/WorkOrders/WorkOrderDetails";
 
 import AIAnalyzer from "./components/AI/AIAnalyzer";
-import AIDiagnostic from "./components/AI/AIDiagnostic";
-import AIPhotoUpload from "./components/AI/AIPhotoUpload";
-import AIInventoryScan from "./components/AI/AIInventoryScan";
-import AIWorkOrderAssist from "./components/AI/AIWorkOrderAssist";
 
 import SettingsPage from "./components/Settings/SettingsPage";
 
@@ -58,6 +57,8 @@ function ProtectedRoute({ children }) {
 
 function AppRouter() {
   const dispatch = useAppDispatch();
+  const { role } = useAppState();
+  const location = useLocation();
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
@@ -66,11 +67,29 @@ function AppRouter() {
     }
   }, [dispatch]);
 
+  useEffect(() => {
+    const surface = role === "gunsmith"
+      ? "surface-admin"
+      : role === "client"
+        ? "surface-client"
+        : "surface-public";
+
+    document.body.classList.remove("surface-admin", "surface-client", "surface-public");
+    document.body.classList.add(surface);
+    document.body.dataset.surfacePath = location.pathname;
+
+    return () => {
+      document.body.classList.remove(surface);
+      delete document.body.dataset.surfacePath;
+    };
+  }, [location.pathname, role]);
+
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/" element={<LandingPage />} />
+      <Route path="/booking" element={<Navigate to="/booking/service" replace />} />
       <Route
         path="/dashboard"
         element={
@@ -96,10 +115,18 @@ function AppRouter() {
         }
       />
       <Route
+        path="/admin/firearms/:id"
+        element={
+          <AdminRoute>
+            <FirearmDetails />
+          </AdminRoute>
+        }
+      />
+      <Route
         path="/booking/service"
         element={
           <ProtectedRoute>
-            <Step1Service />
+            <ServicePage />
           </ProtectedRoute>
         }
       />
@@ -107,7 +134,7 @@ function AppRouter() {
         path="/booking/firearm"
         element={
           <ProtectedRoute>
-            <Step2Firearm />
+            <FirearmPage />
           </ProtectedRoute>
         }
       />
@@ -115,7 +142,7 @@ function AppRouter() {
         path="/booking/datetime"
         element={
           <ProtectedRoute>
-            <Step3DateTime />
+            <DateAndTimePage />
           </ProtectedRoute>
         }
       />
@@ -123,7 +150,15 @@ function AppRouter() {
         path="/booking/confirm"
         element={
           <ProtectedRoute>
-            <Step4Confirm />
+            <ConfirmPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/booking/success"
+        element={
+          <ProtectedRoute>
+            <SuccessPage />
           </ProtectedRoute>
         }
       />
@@ -133,6 +168,14 @@ function AppRouter() {
           <ProtectedRoute>
             <AppointmentDetails />
           </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/appointments/:id"
+        element={
+          <AdminRoute>
+            <AdminBookingDetails />
+          </AdminRoute>
         }
       />
       <Route
@@ -147,7 +190,15 @@ function AppRouter() {
         path="/admin/appointments"
         element={
           <AdminRoute>
-            <AdminAppointmentList />
+            <AdminBookingList />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/schedule"
+        element={
+          <AdminRoute>
+            <AdminSchedule />
           </AdminRoute>
         }
       />
@@ -160,10 +211,26 @@ function AppRouter() {
         }
       />
       <Route
-        path="/inventory"
+        path="/firearms/:id"
+        element={
+          <ProtectedRoute>
+            <FirearmDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/inventory"
         element={
           <AdminRoute>
             <InventoryManager />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/inventory"
+        element={
+          <AdminRoute>
+            <Navigate to="/admin/inventory" replace />
           </AdminRoute>
         }
       />
@@ -224,6 +291,14 @@ function AppRouter() {
         }
       />
       <Route
+        path="/admin/logs"
+        element={
+          <AdminRoute>
+            <AdminLogs />
+          </AdminRoute>
+        }
+      />
+      <Route
         path="/ai/analyze"
         element={
           <ProtectedRoute>
@@ -235,7 +310,7 @@ function AppRouter() {
         path="/ai/diagnostic"
         element={
           <ProtectedRoute>
-            <AIDiagnostic />
+            <Navigate to="/ai/analyze" replace />
           </ProtectedRoute>
         }
       />
@@ -243,7 +318,7 @@ function AppRouter() {
         path="/ai/photo"
         element={
           <ProtectedRoute>
-            <AIPhotoUpload />
+            <Navigate to="/ai/analyze" replace />
           </ProtectedRoute>
         }
       />
@@ -251,7 +326,7 @@ function AppRouter() {
         path="/ai/inventory"
         element={
           <ProtectedRoute>
-            <AIInventoryScan />
+            <Navigate to="/ai/analyze" replace />
           </ProtectedRoute>
         }
       />
@@ -259,7 +334,7 @@ function AppRouter() {
         path="/ai/workorder"
         element={
           <ProtectedRoute>
-            <AIWorkOrderAssist />
+            <Navigate to="/ai/analyze" replace />
           </ProtectedRoute>
         }
       />

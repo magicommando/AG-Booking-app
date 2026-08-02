@@ -1,27 +1,92 @@
 const Message = require('../models/Message');
 
+exports.listConversations = async (req, res) => {
+  try {
+    const userId = String(req.user.userId);
+
+    const messages = await Message.find({
+      $or: [{ sender: userId }, { recipient: userId }]
+    })
+      .populate('sender', 'firstName lastName role')
+      .populate('recipient', 'firstName lastName role')
+      .sort({ createdAt: -1 });
+
+    const byPartner = new Map();
+
+    for (const msg of messages) {
+      const senderId = String(msg.sender?._id || msg.sender);
+      const recipientId = String(msg.recipient?._id || msg.recipient);
+      const partner = senderId === userId ? msg.recipient : msg.sender;
+      const partnerId = String(partner?._id || partner);
+
+      if (!byPartner.has(partnerId)) {
+        byPartner.set(partnerId, {
+          _id: partnerId,
+          participant: partner
+            ? {
+                _id: partnerId,
+                firstName: partner.firstName,
+                lastName: partner.lastName,
+                role: partner.role
+              }
+            : null,
+          lastMessage: {
+            text: msg.content || '',
+            createdAt: msg.createdAt
+          },
+          appointmentId: msg.appointmentId || null
+        });
+      }
+    }
+
+    res.json(Array.from(byPartner.values()));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.sendMessage = async (req, res) => {
   try {
     const { senderId, receiverId, appointmentId, text, attachments } = req.body;
-    
-    if (senderId !== req.user.userId) {
+
+    if (String(senderId) !== String(req.user.userId)) {
       return res.status(403).json({ message: 'Forbidden: sender mismatch' });
     }
 
-    // Validate attachments (must be URLs)
+    // Normalize attachments to [{ url, filename? }]
     let safeAttachments = [];
     if (Array.isArray(attachments)) {
-      safeAttachments = attachments.filter(url => typeof url === 'string');
+      safeAttachments = attachments
+        .map((item) => {
+          if (typeof item === 'string') {
+            return { url: item };
+          }
+
+          if (item && typeof item.url === 'string') {
+            return {
+              url: item.url,
+              filename: item.filename
+            };
+          }
+
+          return null;
+        })
+        .filter(Boolean);
     }
 
     const message = await Message.create({
-      senderId,
-      receiverId,
+      sender: senderId,
+      recipient: receiverId,
       appointmentId,
-      text,
+      content: text,
       attachments: safeAttachments
     });
-    res.json({ message: 'Message sent', data: message });
+
+    const populated = await Message.findById(message._id)
+      .populate('sender', 'firstName lastName role')
+      .populate('recipient', 'firstName lastName role');
+
+    res.json({ message: 'Message sent', data: populated });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -41,16 +106,19 @@ exports.getConversation = async (req, res) => {
   try {
     const { user1, user2 } = req.params;
 
-    if (req.user.userId !== user1 && req.user.userId !== user2) {
+    if (String(req.user.userId) !== String(user1) && String(req.user.userId) !== String(user2)) {
       return res.status(403).json({ message: 'Forbidden: cannot view others’ conversation' });
     }
 
     const messages = await Message.find({
       $or: [
-        { senderId: user1, receiverId: user2 },
-        { senderId: user2, receiverId: user1 }
+        { sender: user1, recipient: user2 },
+        { sender: user2, recipient: user1 }
       ]
-    }).sort({ timestamp: 1 });
+    })
+      .populate('sender', 'firstName lastName role')
+      .populate('recipient', 'firstName lastName role')
+      .sort({ createdAt: 1 });
 
     res.json(messages);
   } catch (err) {

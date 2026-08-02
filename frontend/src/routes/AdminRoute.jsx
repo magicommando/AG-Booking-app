@@ -2,10 +2,14 @@ import { Navigate } from "react-router-dom";
 import { useAppState } from "../state/AppState";
 
 export default function AdminRoute({ children }) {
-  const { user } = useAppState();
+  const { token, user } = useAppState();
 
-  if (!user || user.role !== "admin") {
+  if (!token) {
     return <Navigate to="/login" />;
+  }
+
+  if (user?.role !== "gunsmith" && user?.role !== "admin") {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

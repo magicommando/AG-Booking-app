@@ -7,9 +7,13 @@ const upload = require('../middleware/fileUpload');
 const { firearmSchemas } = require('../validation/validationSchemas');
 const firearmController = require('../controllers/firearmController');
 
+router.get('/', auth, allow(['client', 'gunsmith']), firearmController.listFirearms);
+
 router.post('/', auth, allow(['client']), validate(firearmSchemas.create), firearmController.addFirearm);
 
 router.get('/user/:userId', auth, allow(['client', 'gunsmith']), firearmController.getUserFirearms);
+
+router.get('/:id', auth, allow(['client', 'gunsmith']), firearmController.getFirearm);
 
 router.put('/:id', auth, allow(['client']), validate(firearmSchemas.update), firearmController.updateFirearm);
 

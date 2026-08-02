@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   phone: { type: String },
   location: { type: String },
+  billingAddress: { type: String },
+  preferredContactMethod: { type: String, enum: ['email', 'phone', 'sms'] },
   createdAt: { type: Date, default: Date.now }
 });
 

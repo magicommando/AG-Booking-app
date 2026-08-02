@@ -11,7 +11,7 @@ const AppDispatchContext = createContext();
 const initialState = {
   token: localStorage.getItem("token"),
   user: JSON.parse(localStorage.getItem("user") || "null"),
-  role: null,
+  role: JSON.parse(localStorage.getItem("user") || "null")?.role || null,
   aiResult: null,
   photoUrl: null,
   inventoryItems: [],

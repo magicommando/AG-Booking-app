@@ -1,0 +1,158 @@
+.inv-form-container {
+  padding: 40px;
+  background:
+    linear-gradient(rgba(8, 8, 8, 0.55), rgba(8, 8, 8, 0.55)),
+    url("../../assets/Inventory-bg.png") center / cover no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: #eee;
+  backdrop-filter: blur(2px);
+}
+
+.inv-form-container h2 {
+  text-align: center;
+  color: #c9a86a;
+  margin-bottom: 25px;
+  text-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
+}
+
+/* Card */
+.inv-form-card {
+  background: rgba(26, 26, 26, 0.78);
+  padding: 25px;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 168, 106, 0.35);
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow:
+    0 0 10px rgba(0, 255, 255, 0.15),
+    inset 0 0 6px rgba(0, 255, 255, 0.08);
+}
+
+/* Labels */
+.inv-form-card label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  color: #c9a86a;
+  font-weight: bold;
+}
+
+/* Inputs */
+.inv-input,
+.inv-textarea {
+  width: 100%;
+  padding: 12px;
+  background: rgba(15, 15, 15, 0.9);
+  border: 1px solid #333;
+  color: #eee;
+  border-radius: 6px;
+  transition: 0.25s ease;
+}
+
+.inv-input:focus,
+.inv-textarea:focus {
+  border-color: #c9a86a;
+  box-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
+}
+
+.inv-textarea {
+  height: 120px;
+  resize: none;
+}
+
+/* Save Button */
+.inv-save-btn {
+  margin-top: 25px;
+  width: 100%;
+  padding: 14px;
+  background: #c9a86a;
+  color: #111;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.25s ease;
+}
+
+.inv-save-btn:hover {
+  background: #d4b47a;
+  box-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
+}
+
+/* Disabled (Saving...) */
+.inv-save-btn:disabled {
+  background: #8e7a4f;
+  color: #222;
+  cursor: not-allowed;
+  opacity: 0.75;
+  box-shadow: none;
+}
+
+.inv-cancel-btn {
+  margin-top: 10px;
+  background: #333;
+  color: #eee;
+}
+
+.inv-cancel-btn:hover {
+  background: #444;
+  box-shadow: none;
+}
+
+/* Error Message */
+.inv-form-error {
+  margin-top: 10px;
+  color: #ff6666;
+  font-weight: bold;
+}
+
+.inv-form-success {
+  margin-top: 10px;
+  color: #9ce8b0;
+  font-weight: bold;
+}
+
+.inv-order-section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(201, 168, 106, 0.25);
+}
+
+.inv-order-toggle {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+
+.inv-order-toggle input {
+  width: auto;
+}
+
+.inv-order-notes {
+  height: 90px;
+}
+
+.inv-order-history {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(201, 168, 106, 0.25);
+}
+
+.inv-order-history h3 {
+  margin: 0 0 10px;
+  color: #c9a86a;
+}
+
+.inv-order-row {
+  background: rgba(18, 18, 18, 0.8);
+  border: 1px solid rgba(201, 168, 106, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.inv-order-row p {
+  margin: 2px 0;
+}

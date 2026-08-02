@@ -1,19 +1,12 @@
 import { useAppDispatch } from "../../state/AppState";
 import { useNavigate } from "react-router-dom";
 import ServiceCard from "../Services/ServiceCard";
-
+import BookingProgress from "./BookingProgress";
+import { SERVICE_CATALOG } from "../../utils/serviceCatalog";
+import "./Booking.css";
 export default function Step1Service() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  const services = [
-  { name: "General Inspection", description: "Full firearm checkup" },
-  { name: "Cleaning & Maintenance", description: "Deep clean + lubrication" },
-  { name: "Trigger Work", description: "Trigger smoothing & tuning" },
-  { name: "Barrel Work", description: "Threading, crowning, polishing" },
-  { name: "Sight Installation", description: "Install & zero sights" },
-  { name: "Custom Work", description: "Custom modifications" }
-];
 
   function selectService(service) {
     dispatch({ type: "SET_BOOKING_SERVICE", payload: service });
@@ -21,12 +14,15 @@ export default function Step1Service() {
   }
 
   return (
-  <div className="booking-container">
-    <h2>Select a Service</h2>
+    <div className="booking-container">
+      <h2>Select a Service</h2>
+      <BookingProgress currentStep={1} />
 
-    {services.map((s, i) => (
-      <ServiceCard key={i} service={s} onSelect={selectService} />
-    ))}
-  </div>
-);
+      <div className="booking-panel">
+        {SERVICE_CATALOG.map((s, i) => (
+          <ServiceCard key={i} service={s} onSelect={selectService} />
+        ))}
+      </div>
+    </div>
+  );
 }

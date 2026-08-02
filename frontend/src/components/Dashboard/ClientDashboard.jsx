@@ -33,14 +33,7 @@ export default function ClientDashboard() {
         <div className="clientdash-card">
           <h3>AI Firearm Diagnostics</h3>
           <p>Describe an issue or upload a photo for instant AI analysis.</p>
-          <Link to="/ai/diagnostic" className="clientdash-btn">Run Diagnostic</Link>
-        </div>
-
-        {/* AI Photo Upload */}
-        <div className="clientdash-card">
-          <h3>AI Photo Upload</h3>
-          <p>Upload firearm photos for enhanced AI inspection.</p>
-          <Link to="/ai/photo" className="clientdash-btn">Upload Photo</Link>
+          <Link to="/ai/analyze" className="clientdash-btn">Run Diagnostic</Link>
         </div>
 
         {/* Messages */}

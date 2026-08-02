@@ -6,6 +6,13 @@ const validate = require('../middleware/validateMiddleware');
 const { messageSchemas } = require('../validation/validationSchemas');
 const messageController = require('../controllers/messageController');
 
+router.get(
+  '/conversations',
+  auth,
+  allow(['client', 'gunsmith']),
+  messageController.listConversations
+);
+
 // Send message
 router.post(
   '/',

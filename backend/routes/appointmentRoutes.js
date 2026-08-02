@@ -19,7 +19,7 @@ router.post(
 router.get(
   '/client/:clientId',
   auth,
-  allow(['client']),
+  allow(['client', 'gunsmith']),
   appointmentController.getClientAppointments
 );
 
@@ -31,6 +31,23 @@ router.get(
   appointmentController.getGunsmithAppointments
 );
 
+// Client updates/reschedules own appointment
+router.put(
+  '/:id',
+  auth,
+  allow(['client']),
+  validate(appointmentSchemas.create),
+  appointmentController.updateAppointmentByClient
+);
+
+// Client cancels own appointment
+router.delete(
+  '/:id',
+  auth,
+  allow(['client']),
+  appointmentController.cancelAppointment
+);
+
 // Update appointment status
 router.put(
   '/:id/status',
@@ -38,6 +55,22 @@ router.put(
   allow(['gunsmith']),
   validate(appointmentSchemas.updateStatus),
   appointmentController.updateAppointmentStatus
+);
+
+// Admin-side update/reschedule appointment
+router.put(
+  '/:id/admin',
+  auth,
+  allow(['gunsmith']),
+  validate(appointmentSchemas.updateAdmin),
+  appointmentController.updateAppointmentByAdmin
+);
+
+router.get(
+  '/:id',
+  auth,
+  allow(['client', 'gunsmith']),
+  appointmentController.getAppointmentById
 );
 
 module.exports = router;

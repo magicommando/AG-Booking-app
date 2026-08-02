@@ -28,6 +28,6 @@
 .loader-overlay p {
   margin-top: 10px;
   color: #c9a86a;
-  font-family: "VT323", monospace;
+  font-family: var(--font-mono-current);
   font-size: 22px;
 }

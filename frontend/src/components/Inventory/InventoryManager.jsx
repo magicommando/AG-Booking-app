@@ -1,106 +1,49 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppState } from "../../state/AppState";
-import axios from "axios";
+import { deleteInventoryItem, fetchInventoryItems } from "../../services/inventoryService";
 import "./InventoryManager.css";
 
 export default function InventoryManager() {
+  const navigate = useNavigate();
   const { token } = useAppState();
 
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editItem, setEditItem] = useState(null);
-
-  const [form, setForm] = useState({
-    name: "",
-    category: "",
-    quantity: 0,
-    location: "",
-    notes: ""
-  });
+  const [error, setError] = useState("");
 
   // Load inventory
   useEffect(() => {
     async function loadInventory() {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/inventory",
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setInventory(res.data);
+        setError("");
+        const items = await fetchInventoryItems(token);
+        setInventory(items);
       } catch (err) {
         console.error("Error loading inventory:", err);
+        setError("Unable to load inventory.");
       } finally {
         setLoading(false);
       }
     }
 
-    loadInventory();
-  }, [token]);
-
-  // Open modal for add/edit
-  function openModal(item = null) {
-    setEditItem(item);
-
-    if (item) {
-      setForm({
-        name: item.name,
-        category: item.category,
-        quantity: item.quantity,
-        location: item.location,
-        notes: item.notes
-      });
+    if (token) {
+      loadInventory();
     } else {
-      setForm({
-        name: "",
-        category: "",
-        quantity: 0,
-        location: "",
-        notes: ""
-      });
+      setLoading(false);
     }
-
-    setModalOpen(true);
-  }
-
-  // Save inventory item
-  async function saveItem() {
-    try {
-      if (editItem) {
-        await axios.put(
-          `http://localhost:5000/api/inventory/${editItem._id}`,
-          form,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } else {
-        await axios.post(
-          "http://localhost:5000/api/inventory",
-          form,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      }
-
-      setModalOpen(false);
-      window.location.reload();
-    } catch (err) {
-      console.error("Error saving inventory item:", err);
-    }
-  }
+  }, [token]);
 
   // Delete inventory item
   async function deleteItem(id) {
     if (!window.confirm("Delete this inventory item?")) return;
 
     try {
-      await axios.delete(
-        `http://localhost:5000/api/inventory/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setInventory(inventory.filter((i) => i._id !== id));
+      await deleteInventoryItem(id, token);
+      setInventory((prev) => prev.filter((i) => i._id !== id));
     } catch (err) {
       console.error("Error deleting inventory item:", err);
+      setError("Unable to delete inventory item.");
     }
   }
 
@@ -110,9 +53,16 @@ export default function InventoryManager() {
     <div className="inv-container">
       <h2>Inventory Manager</h2>
 
-      <button className="inv-add-btn" onClick={() => openModal()}>
-        + Add Item
-      </button>
+      <div className="inv-toolbar">
+        <Link className="inv-add-btn" to="/admin/inventory/new">
+          + Add Item
+        </Link>
+        <Link className="inv-table-btn" to="/admin/inventory/table">
+          Open Inventory Table
+        </Link>
+      </div>
+
+      {error ? <p className="inv-error">{error}</p> : null}
 
       <div className="inv-grid">
         {inventory.map((item) => (
@@ -122,65 +72,19 @@ export default function InventoryManager() {
             <p><strong>Quantity:</strong> {item.quantity}</p>
             <p><strong>Location:</strong> {item.location}</p>
 
-            {item.quantity < 5 && (
+            {item.lowStockAlert && (
               <p className="inv-lowstock">Low Stock!</p>
             )}
 
             <div className="inv-actions">
-              <button onClick={() => openModal(item)}>Edit</button>
+              <button onClick={() => navigate(`/admin/inventory/edit/${item._id}`)}>Edit</button>
               <button onClick={() => deleteItem(item._id)}>Delete</button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Modal */}
-      {modalOpen && (
-        <div className="inv-modal">
-          <div className="inv-modal-content">
-            <h3>{editItem ? "Edit Item" : "Add Item"}</h3>
-
-            <input
-              type="text"
-              placeholder="Item Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-
-            <input
-              type="text"
-              placeholder="Category"
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-            />
-
-            <input
-              type="number"
-              placeholder="Quantity"
-              value={form.quantity}
-              onChange={(e) => setForm({ ...form, quantity: Number(e.target.value) })}
-            />
-
-            <input
-              type="text"
-              placeholder="Location"
-              value={form.location}
-              onChange={(e) => setForm({ ...form, location: e.target.value })}
-            />
-
-            <textarea
-              placeholder="Notes"
-              value={form.notes}
-              onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            />
-
-            <div className="inv-modal-actions">
-              <button onClick={saveItem}>Save</button>
-              <button onClick={() => setModalOpen(false)}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {!error && inventory.length === 0 ? <p>No inventory items found.</p> : null}
     </div>
   );
 }

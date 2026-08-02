@@ -2,31 +2,70 @@ exports.firearmSchemas = {
   create: {
     make: { required: true, type: "string", minLength: 2 },
     model: { required: true, type: "string", minLength: 1 },
-    serialNumber: { required: true, type: "string", minLength: 3 },
-    type: { required: true, type: "string", enum: ["pistol", "rifle", "shotgun", "smg", "carbine"] },
-    caliber: { required: true, type: "string" }
+    serial: { type: "string", minLength: 1 },
+    serialNumber: { type: "string", minLength: 1 },
+    type: { type: "string" },
+    caliber: { type: "string" }
   },
 
   update: {
     make: { type: "string" },
     model: { type: "string" },
+    serial: { type: "string" },
     serialNumber: { type: "string" },
-    type: { type: "string", enum: ["pistol", "rifle", "shotgun", "smg", "carbine"] },
+    type: { type: "string" },
     caliber: { type: "string" }
+  }
+};
+
+exports.authSchemas = {
+  register: {
+    firstName: { required: true, type: "string", minLength: 1 },
+    lastName: { required: true, type: "string", minLength: 1 },
+    email: { required: true, type: "string", minLength: 3 },
+    password: { required: true, type: "string", minLength: 6 },
+    phone: { required: true, type: "string", minLength: 7 },
+    location: { required: true, type: "string", minLength: 2 },
+    billingAddress: { required: true, type: "string", minLength: 5 },
+    preferredContactMethod: { required: true, type: "string", enum: ["email", "phone", "sms"] },
+    role: { type: "string", enum: ["client", "gunsmith"] }
+  }
+};
+
+exports.userSchemas = {
+  profileUpdate: {
+    fullName: { type: "string", minLength: 1 },
+    email: { required: true, type: "string", minLength: 3 },
+    phone: { required: true, type: "string", minLength: 7 },
+    location: { required: true, type: "string", minLength: 2 },
+    billingAddress: { required: true, type: "string", minLength: 5 },
+    preferredContactMethod: { required: true, type: "string", enum: ["email", "phone", "sms"] }
   }
 };
 
 exports.appointmentSchemas = {
   create: {
     firearmId: { required: true, type: "string" },
-    gunsmithId: { required: true, type: "string" },
-    serviceType: { required: true, type: "string" },
-    appointmentDate: { required: true, type: "string" },
+    service: { type: "string" },
+    serviceType: { type: "string" },
+    serviceId: { type: "string" },
+    date: { type: "string" },
+    time: { type: "string" },
+    appointmentDate: { type: "string" },
+    gunsmithId: { type: "string" },
     notes: { type: "string", maxLength: 500 }
   },
 
   updateStatus: {
     status: { required: true, type: "string", enum: ["pending", "approved", "in progress", "completed", "cancelled"] }
+  },
+
+  updateAdmin: {
+    status: { type: "string", enum: ["pending", "approved", "denied", "in progress", "completed", "cancelled"] },
+    date: { type: "string" },
+    time: { type: "string" },
+    appointmentDate: { type: "string" },
+    notes: { type: "string", maxLength: 500 }
   }
 };
 
@@ -48,17 +87,33 @@ exports.workOrderSchemas = {
 
 exports.inventorySchemas = {
   create: {
-    productName: { required: true, type: "string" },
-    quantity: { required: true, type: "number" },
-    category: { required: true, type: "string" },
-    description: { type: "string", maxLength: 300 }
+    productName: { type: "string" },
+    name: { type: "string" },
+    quantity: { type: "number" },
+    category: { type: "string" },
+    location: { type: "string" },
+    notes: { type: "string", maxLength: 500 },
+    sku: { type: "string" },
+    partNumber: { type: "string" },
+    cost: { type: "number" },
+    price: { type: "number" },
+    supplier: { type: "string" },
+    vendor: { type: "string" }
   },
 
   update: {
     productName: { type: "string" },
+    name: { type: "string" },
     quantity: { type: "number" },
     category: { type: "string" },
-    description: { type: "string", maxLength: 300 }
+    location: { type: "string" },
+    notes: { type: "string", maxLength: 500 },
+    sku: { type: "string" },
+    partNumber: { type: "string" },
+    cost: { type: "number" },
+    price: { type: "number" },
+    supplier: { type: "string" },
+    vendor: { type: "string" }
   }
 };
 
@@ -66,7 +121,7 @@ exports.messageSchemas = {
   send: {
     senderId: { required: true, type: "string" },
     receiverId: { required: true, type: "string" },
-    appointmentId: { required: true, type: "string" },
+    appointmentId: { type: "string" },
     text: { type: "string", maxLength: 2000 },
     attachments: { type: "object" }
   }
@@ -82,7 +137,7 @@ exports.serviceSchemas = {
 
 exports.aiSchemas = {
   analyzeFirearm: {
-    firearmId: { required: true, type: "string" },
+    firearmId: { type: "string" },
     inputText: { required: true, type: "string", minLength: 5 },
     photoUrl: { type: "string" }
   },

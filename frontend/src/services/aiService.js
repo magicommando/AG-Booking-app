@@ -1,7 +1,7 @@
 import api from "./api";
 
 export async function analyzeFirearm(token, payload) {
-  const response = await api.post("/ai/diagnostic", payload, {
+  const response = await api.post("/ai/firearm", payload, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;

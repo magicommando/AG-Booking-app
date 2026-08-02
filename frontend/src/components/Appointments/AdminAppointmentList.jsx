@@ -5,15 +5,20 @@ import AppointmentCard from "./AppointmentCard";
 import "./AppointmentList.css";
 
 export default function AdminAppointmentList() {
-  const { token, role } = useAppState();
+  const { token, role, user } = useAppState();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadAppointments() {
       try {
+        if (!user?.id) {
+          setAppointments([]);
+          return;
+        }
+
         const res = await axios.get(
-          "http://localhost:5000/api/appointments/my",
+          `http://localhost:5000/api/appointments/gunsmith/${user.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setAppointments(res.data);
@@ -25,7 +30,7 @@ export default function AdminAppointmentList() {
     }
 
     loadAppointments();
-  }, [token]);
+  }, [token, user?.id]);
 
   if (loading) return <div className="apptlist-container">Loading...</div>;
 
@@ -42,6 +47,7 @@ export default function AdminAppointmentList() {
           key={appt._id}
           appointment={appt}
           role={role}
+          detailsPathBase="/admin/appointments"
         />
       ))}
     </div>

@@ -1,0 +1,289 @@
+.admin-booking-container {
+  padding: 40px;
+  background:
+    linear-gradient(rgba(8, 8, 8, 0.6), rgba(8, 8, 8, 0.6)),
+    url("../../assets/Admin-appmt-request-bg.png") center / cover no-repeat;
+  background-attachment: fixed;
+  background-size: 120% 120%;
+  color: #eee;
+  min-height: 120vh;
+  backdrop-filter: blur(2px);
+}
+
+/* Header */
+.admin-booking-container h2 {
+  text-align: center;
+  color: #c9a86a;
+  margin-bottom: 25px;
+  text-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
+}
+
+/* Booking List */
+.admin-booking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-booking-item {
+  background: rgba(26, 26, 26, 0.78);
+  padding: 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 168, 106, 0.35);
+  cursor: pointer;
+  transition: 0.25s ease;
+  box-shadow:
+    0 0 8px rgba(0, 255, 255, 0.15),
+    inset 0 0 6px rgba(0, 255, 255, 0.08);
+  display: grid;
+  gap: 10px;
+}
+
+.admin-booking-item:hover {
+  background: rgba(40, 40, 40, 0.85);
+  box-shadow: 0 0 10px rgba(201, 168, 106, 0.35);
+}
+
+.admin-booking-item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.admin-booking-client {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-booking-client strong {
+  color: #f1d7a0;
+  font-size: 1.02rem;
+}
+
+.admin-booking-meta {
+  color: #d7cfbd;
+  font-size: 0.92rem;
+}
+
+.admin-booking-details-snippet {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  color: #d7cfbd;
+}
+
+.admin-booking-details-snippet p {
+  margin: 0;
+}
+
+/* Status Tags */
+.admin-booking-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  text-transform: capitalize;
+  background: rgba(35, 35, 35, 0.9);
+  border: 1px solid rgba(201, 168, 106, 0.3);
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.15);
+}
+
+.status-pending {
+  color: #d9c38d;
+}
+
+.status-approved {
+  color: #9ce8b0;
+}
+
+.status-denied,
+.status-cancelled {
+  color: #ffb5b5;
+}
+
+/* Details Panel */
+.admin-booking-details {
+  margin-top: 25px;
+  background: rgba(26, 26, 26, 0.78);
+  padding: 25px;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 168, 106, 0.35);
+  box-shadow:
+    0 0 10px rgba(0, 255, 255, 0.15),
+    inset 0 0 6px rgba(0, 255, 255, 0.08);
+}
+
+  .admin-booking-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 18px 0 8px;
+  }
+
+  .admin-booking-summary-card {
+    background: rgba(15, 15, 15, 0.82);
+    border: 1px solid rgba(201, 168, 106, 0.22);
+    border-radius: 8px;
+    padding: 14px;
+    display: grid;
+    gap: 6px;
+  }
+
+  .admin-booking-summary-card span {
+    color: #d6c195;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+  }
+
+  .admin-booking-summary-card strong {
+    color: #f1d7a0;
+  }
+
+  .admin-booking-summary-card small {
+    color: #bdb7a9;
+  }
+
+/* Action Buttons */
+.admin-booking-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+.admin-approve-btn {
+  padding: 12px 20px;
+  background: #c9a86a;
+  color: #111;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.25s ease;
+}
+
+.admin-approve-btn:hover {
+  background: #d4b47a;
+  box-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
+}
+
+.admin-decline-btn {
+  padding: 12px 20px;
+  background: #661111;
+  color: #eee;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.25s ease;
+}
+
+.admin-decline-btn:hover {
+  background: #7a1a1a;
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.35);
+}
+
+/* Work Order Section */
+.admin-booking-workorder {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(201, 168, 106, 0.24);
+}
+
+.admin-booking-workorder h4 {
+  margin: 0 0 10px;
+  color: #c9a86a;
+  text-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
+}
+
+.admin-create-workorder-btn {
+  padding: 12px 20px;
+  background: #4f6eaf;
+  color: #eef3ff;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.25s ease;
+}
+
+.admin-create-workorder-btn:hover {
+  background: #5e7fc4;
+  box-shadow: 0 0 8px rgba(79, 110, 175, 0.35);
+}
+
+.admin-create-workorder-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+/* Reschedule Section */
+.admin-booking-reschedule {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(201, 168, 106, 0.24);
+  display: grid;
+  gap: 10px;
+  max-width: 380px;
+}
+
+.admin-booking-reschedule h4 {
+  margin: 0;
+  color: #c9a86a;
+}
+
+.admin-booking-reschedule input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: rgba(14, 14, 14, 0.88);
+  color: #eee;
+  transition: 0.25s ease;
+}
+
+.admin-booking-reschedule .client-slot-grid {
+  margin-top: 4px;
+}
+
+.admin-booking-reschedule .booking-step-label {
+  margin: 0;
+}
+
+.admin-booking-reschedule input:focus {
+  border-color: #c9a86a;
+  box-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
+}
+
+/* Feedback Messages */
+.admin-booking-success {
+  color: #9ce8b0;
+  margin-bottom: 10px;
+}
+
+.admin-booking-error {
+  color: #ffb5b5;
+  margin-bottom: 10px;
+}
+
+.admin-booking-muted {
+  color: #b5b5b5;
+  margin: 0;
+}
+
+/* Navigation */
+.admin-booking-back {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(201, 168, 106, 0.45);
+  background: rgba(22, 22, 22, 0.9);
+  color: #eee;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.admin-booking-back:hover {
+  background: rgba(35, 35, 35, 0.95);
+  box-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
+}

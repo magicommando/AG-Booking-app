@@ -1,0 +1,118 @@
+html,
+body,
+#root {
+	min-height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: var(--font-body-current);
+	letter-spacing: 0.01em;
+	background: #0f0f0f;
+	color: #eee;
+}
+
+body.surface-public,
+body.surface-client {
+	--font-display-current: var(--font-client-display);
+	--font-body-current: var(--font-client-body);
+	--font-accent-current: var(--font-client-accent);
+	--font-mono-current: var(--font-admin-terminal);
+}
+
+body.surface-admin {
+	--font-display-current: var(--font-admin-display);
+	--font-body-current: var(--font-admin-body);
+	--font-accent-current: var(--font-admin-display);
+	--font-mono-current: var(--font-admin-terminal);
+}
+
+.app-layout,
+.app-content,
+.landing-container,
+.auth-container,
+.clientdash-container,
+.booking-container,
+.msg-container,
+.admindash-container,
+.ai-container,
+.nav-container,
+.sidebar {
+	font-family: var(--font-body-current);
+}
+
+.landing-container h1,
+.landing-container h2,
+.landing-container h3,
+.landing-container h4,
+.auth-container h1,
+.auth-container h2,
+.clientdash-container h1,
+.clientdash-container h2,
+.clientdash-container h3,
+.booking-container h1,
+.booking-container h2,
+.booking-container h3,
+.msg-container h1,
+.msg-container h2,
+.msg-container h3,
+.admindash-container h1,
+.admindash-container h2,
+.admindash-container h3,
+.ai-container h1,
+.ai-container h2,
+.ai-container h3,
+.sidebar-title,
+.brand-title {
+	font-family: var(--font-display-current);
+	letter-spacing: var(--letter-spacing-display);
+}
+
+.landing-nav a,
+.nav-link,
+.nav-logout,
+.nav-back,
+.sidebar-links a,
+.primary-btn,
+.secondary-btn,
+.clientdash-btn,
+.booking-btn,
+.auth-btn,
+.msg-compose-btn,
+.msg-input-area button,
+.admindash-btn,
+.ai-btn {
+	font-family: var(--font-accent-current);
+	letter-spacing: var(--letter-spacing-accent);
+	text-transform: uppercase;
+}
+
+input,
+select,
+textarea,
+button {
+	font: inherit;
+}
+
+body.surface-admin .msg-container,
+body.surface-admin .msg-container label,
+body.surface-admin .msg-container input,
+body.surface-admin .msg-container select,
+body.surface-admin .msg-container textarea,
+body.surface-admin .msg-container button,
+body.surface-admin .msg-container p,
+body.surface-admin .msg-container span,
+body.surface-admin .msg-container strong,
+body.surface-admin .msg-container h2,
+body.surface-admin .msg-container h3,
+body.surface-admin .settings-container,
+body.surface-admin .settings-container h2,
+body.surface-admin .settings-container h3 {
+	font-family: var(--font-body-current);
+}
+
+body.surface-admin .msg-container h2,
+body.surface-admin .msg-container h3,
+body.surface-admin .sidebar-title {
+	font-family: var(--font-display-current);
+}

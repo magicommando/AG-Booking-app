@@ -1,14 +1,31 @@
 {
   "files": {
-    "main.css": "/static/css/main.219f564e.css",
-    "main.js": "/static/js/main.1bc50d9b.js",
+    "main.css": "/static/css/main.bb9043cf.css",
+    "main.js": "/static/js/main.0031fe00.js",
+    "static/media/ai-war-veteran-avatar.png": "/static/media/ai-war-veteran-avatar.4327a7a0a4151f411269.png",
+    "static/media/twin-buttes-bg.png": "/static/media/twin-buttes-bg.60d442c6d7b7c5d7f08d.png",
+    "static/media/Workorder-bg.png": "/static/media/Workorder-bg.346cecc7bedc6f2a27f2.png",
+    "static/media/AI-Analyzer-bg.png": "/static/media/AI-Analyzer-bg.e1b1d91e25bbdd55a88e.png",
+    "static/media/Schedule-availability-bg.png": "/static/media/Schedule-availability-bg.681460e4c43c6f4dbe52.png",
+    "static/media/Admin-appmt-request-bg.png": "/static/media/Admin-appmt-request-bg.78b4397c674d67ee6c69.png",
+    "static/media/Firearms-page-bg.png": "/static/media/Firearms-page-bg.b84756454e263a8a9d03.png",
+    "static/media/Settings-bg.png": "/static/media/Settings-bg.44ea4409853c1fac2cae.png",
+    "static/media/Client-Dash-bg.png": "/static/media/Client-Dash-bg.5e1157630189306b5d05.png",
+    "static/media/Firearm-Details-bg.png": "/static/media/Firearm-Details-bg.188ddf8b5eeb207b651c.png",
+    "static/media/Gunsmith-Dash-bg.png": "/static/media/Gunsmith-Dash-bg.63f9bcc12724b5d4179e.png",
+    "static/media/Inventory-bg.png": "/static/media/Inventory-bg.0cd3629ae97c24e47cca.png",
+    "static/media/Client-Appointment-bg.png": "/static/media/Client-Appointment-bg.aa9ced69d9ecb9026bcb.png",
+    "static/media/Booking-Service-bg.png": "/static/media/Booking-Service-bg.7d432910d832e4df70df.png",
+    "static/media/Message-Bg.png": "/static/media/Message-Bg.2603635f2320e610e0da.png",
+    "static/media/Sidebar-bg.png": "/static/media/Sidebar-bg.420f88ea5eb4c3342ffe.png",
     "static/media/logo.png": "/static/media/logo.991d8c6106cc4ea16aac.png",
+    "static/media/sunface-banner.png": "/static/media/sunface-banner.59982a1a082d0e63e4be.png",
     "index.html": "/index.html",
-    "main.219f564e.css.map": "/static/css/main.219f564e.css.map",
-    "main.1bc50d9b.js.map": "/static/js/main.1bc50d9b.js.map"
+    "main.bb9043cf.css.map": "/static/css/main.bb9043cf.css.map",
+    "main.0031fe00.js.map": "/static/js/main.0031fe00.js.map"
   },
   "entrypoints": [
-    "static/css/main.219f564e.css",
-    "static/js/main.1bc50d9b.js"
+    "static/css/main.bb9043cf.css",
+    "static/js/main.0031fe00.js"
   ]
 }

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppState } from "../../state/AppState";
-import axios from "axios";
+import { deleteInventoryItem, fetchInventoryItems } from "../../services/inventoryService";
 import "./InventoryTable.css";
 
 export default function InventoryTable() {
+  const navigate = useNavigate();
   const { token } = useAppState();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,10 +17,8 @@ export default function InventoryTable() {
   useEffect(() => {
     async function loadInventory() {
       try {
-        const res = await axios.get("http://localhost:5000/api/inventory", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setItems(res.data);
+        const data = await fetchInventoryItems(token);
+        setItems(data);
       } catch (err) {
         console.error(err);
         setError("Unable to load inventory.");
@@ -36,7 +36,7 @@ export default function InventoryTable() {
 
   function filteredItems() {
     const filtered = items.filter((item) =>
-      `${item.name} ${item.category} ${item.sku}`
+      `${item.name} ${item.category} ${item.sku} ${item.supplier}`
         .toLowerCase()
         .includes(search.toLowerCase())
     );
@@ -60,12 +60,29 @@ export default function InventoryTable() {
     }
   }
 
+  async function handleDelete(id) {
+    if (!window.confirm("Delete this inventory item?")) return;
+
+    try {
+      await deleteInventoryItem(id, token);
+      setItems((prev) => prev.filter((item) => item._id !== id));
+    } catch (err) {
+      console.error(err);
+      setError("Unable to delete inventory item.");
+    }
+  }
+
   if (loading) return <div className="inventory-container">Loading...</div>;
   if (error) return <div className="inventory-container">{error}</div>;
 
   return (
     <div className="inventory-container">
       <h2>Inventory</h2>
+
+      <div className="inventory-toolbar">
+        <button type="button" onClick={() => navigate("/admin/inventory")}>Back to Inventory Page</button>
+        <button type="button" onClick={() => navigate("/admin/inventory/new")}>Add Item</button>
+      </div>
 
       <input
         type="text"
@@ -84,6 +101,7 @@ export default function InventoryTable() {
             <th onClick={() => toggleSort("quantity")}>Qty</th>
             <th onClick={() => toggleSort("cost")}>Cost</th>
             <th onClick={() => toggleSort("supplier")}>Supplier</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -95,6 +113,10 @@ export default function InventoryTable() {
               <td>{item.quantity}</td>
               <td>{item.cost != null ? `$${item.cost}` : "N/A"}</td>
               <td>{item.supplier || "N/A"}</td>
+              <td className="inventory-actions-cell">
+                <button type="button" onClick={() => navigate(`/admin/inventory/edit/${item._id}`)}>Edit</button>
+                <button type="button" onClick={() => handleDelete(item._id)}>Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>

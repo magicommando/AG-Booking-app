@@ -8,6 +8,7 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-title">Menu</div>
+      
 
       {/* CLIENT MENU */}
       {role === "client" && (
@@ -26,6 +27,7 @@ export default function Sidebar() {
         <nav className="sidebar-links">
           <Link to="/admin/dashboard">Admin Dashboard</Link>
           <Link to="/admin/appointments">Appointments</Link>
+          <Link to="/admin/schedule">Schedule</Link>
           <Link to="/admin/workorders">Work Orders</Link>
           <Link to="/admin/inventory">Inventory</Link>
           <Link to="/messages">Messages</Link>

@@ -1,15 +1,35 @@
 .apptlist-container {
+  position: relative;
   padding: 40px;
-  background: #111;
   color: #eee;
+  background:
+    linear-gradient(rgba(8, 8, 8, 0.45), rgba(8, 8, 8, 0.45)),
+    url("../../assets/Client-Appointment-bg.png") center / cover no-repeat;
+  background-attachment: fixed;
   min-height: 100vh;
 }
+
+.apptlist-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(8, 8, 8, 0.15) 0%, rgba(8, 8, 8, 0.55) 100%);
+  z-index: 0;
+}
+
+.apptlist-container > * {
+  position: relative;
+  z-index: 1;
+}
+
 
 .apptlist-container h2 {
   color: #c9a86a;
   text-align: center;
   margin-bottom: 20px;
+  text-shadow: 0 0 10px rgba(201, 168, 106, 0.4);
 }
+
 
 .apptlist-empty {
   text-align: center;
@@ -26,14 +46,21 @@
 
 .apptlist-filters button {
   padding: 10px 20px;
-  background: #333;
+  background: rgba(40, 40, 40, 0.8);
   color: #eee;
   border-radius: 6px;
-  border: none;
+  border: 1px solid #333;
   cursor: pointer;
+  backdrop-filter: blur(3px);
+  transition: 0.3s ease;
+}
+
+.apptlist-filters button:hover {
+  background: rgba(58, 58, 58, 0.9);
 }
 
 .filter-active {
   background: #c9a86a !important;
   color: #111 !important;
+  box-shadow: 0 0 10px rgba(201, 168, 106, 0.4);
 }

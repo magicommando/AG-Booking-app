@@ -1,13 +1,29 @@
 .fm-container {
-  padding: 40px;
-  background: #111;
+  position: relative;
+  background: url("../../assets/Firearms-page-bg.png") center / cover no-repeat;
+  background-attachment: fixed;
   color: #eee;
   min-height: 100vh;
 }
 
+.fm-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(8, 8, 8, 0.22) 0%, rgba(8, 8, 8, 0.68) 100%);
+  z-index: 0;
+}
+
+.fm-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+
 .fm-container h2 {
-  color: #c9a86a;
+  color: #f7c975;
   text-align: center;
+  font-size: 35px;
   margin-bottom: 20px;
 }
 
@@ -29,10 +45,11 @@
 }
 
 .fm-card {
-  background: #1a1a1a;
+  background: rgba(26, 26, 26, 0.75);
   padding: 20px;
   border-radius: 8px;
   border: 1px solid #333;
+  backdrop-filter: blur(4px); /* subtle glass effect */
 }
 
 .fm-card h3 {
@@ -104,4 +121,47 @@
   border-radius: 6px;
   border: none;
   cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .fm-container {
+    padding: 20px 14px;
+  }
+
+  .fm-container h2 {
+    font-size: 28px;
+  }
+
+  .fm-add-btn {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .fm-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .fm-actions {
+    flex-wrap: wrap;
+  }
+
+  .fm-actions button,
+  .fm-details-btn {
+    flex: 1 1 120px;
+    text-align: center;
+  }
+
+  .fm-modal-content {
+    width: min(94vw, 350px);
+    padding: 20px;
+  }
+
+  .fm-modal-actions {
+    gap: 10px;
+  }
+
+  .fm-modal-actions button {
+    flex: 1;
+  }
 }

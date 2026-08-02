@@ -1,44 +1,112 @@
 .inventory-container {
   padding: 40px;
-  background: #111;
+  background:
+    linear-gradient(rgba(8, 8, 8, 0.55), rgba(8, 8, 8, 0.55)),
+    url("../../assets/Inventory-bg.png") center / cover no-repeat;
+  background-attachment: fixed;
   color: #eee;
   min-height: 100vh;
+  backdrop-filter: blur(2px);
 }
 
+/* Header */
 .inventory-container h2 {
   color: #c9a86a;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  text-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
 }
 
+/* Search Bar */
 .inventory-search {
   width: 100%;
   padding: 12px;
-  background: #1a1a1a;
+  background: rgba(15, 15, 15, 0.9);
   border: 1px solid #333;
   color: #eee;
   border-radius: 6px;
   margin-bottom: 20px;
+  transition: 0.25s ease;
 }
 
+.inventory-search:focus {
+  border-color: #c9a86a;
+  box-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
+}
+
+/* Toolbar */
+.inventory-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.inventory-toolbar button {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(201, 168, 106, 0.25);
+  background: rgba(26, 26, 26, 0.85);
+  color: #eee;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.inventory-toolbar button:hover {
+  background: rgba(40, 40, 40, 0.9);
+  box-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
+}
+
+/* Table */
 .inventory-table {
   width: 100%;
   border-collapse: collapse;
-  background: #1a1a1a;
+  background: rgba(26, 26, 26, 0.78);
+  border: 1px solid rgba(201, 168, 106, 0.25);
+  box-shadow:
+    0 0 10px rgba(0, 255, 255, 0.15),
+    inset 0 0 6px rgba(0, 255, 255, 0.08);
 }
 
 .inventory-table th,
 .inventory-table td {
   padding: 12px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid rgba(201, 168, 106, 0.25);
 }
 
 .inventory-table th {
   color: #c9a86a;
   cursor: pointer;
   text-align: left;
+  text-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
+  transition: 0.25s ease;
+}
+
+.inventory-table th:hover {
+  color: #d4b47a;
 }
 
 .inventory-table tr:hover {
-  background: #222;
+  background: rgba(35, 35, 35, 0.85);
+  box-shadow: 0 0 6px rgba(201, 168, 106, 0.25);
+}
+
+/* Action Buttons */
+.inventory-actions-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.inventory-actions-cell button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(201, 168, 106, 0.25);
+  background: rgba(22, 22, 22, 0.9);
+  color: #eee;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.inventory-actions-cell button:hover {
+  background: rgba(40, 40, 40, 0.95);
+  box-shadow: 0 0 6px rgba(201, 168, 106, 0.35);
 }

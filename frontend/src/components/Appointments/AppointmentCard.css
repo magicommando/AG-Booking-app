@@ -1,11 +1,41 @@
 .apptcard {
-  background: #1a1a1a;
   border: 1px solid #333;
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
+  backdrop-filter: blur(4px);
+  position: relative;
+  overflow: hidden;
+  transition: 0.3s ease;
 }
 
+.apptcard:hover {
+  border-color: #c9a86a;
+  box-shadow: 0 0 12px rgba(201, 168, 106, 0.35);
+}
+
+/* Brass shimmer */
+.apptcard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 120%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(201, 168, 106, 0.25) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: all 0.8s ease;
+  pointer-events: none;
+}
+
+.apptcard:hover::before {
+  left: 150%;
+}
 .apptcard-header {
   display: flex;
   justify-content: space-between;
@@ -17,11 +47,51 @@
   margin: 0;
 }
 
+
 .apptcard-status {
   padding: 6px 12px;
   border-radius: 6px;
   font-weight: bold;
   text-transform: capitalize;
+  box-shadow: 0 0 6px rgba(0,0,0,0.3);
+}
+
+.apptcard-availability-row {
+  margin-top: 12px;
+}
+
+.apptcard-availability {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.availability-scheduled {
+  background: rgba(201, 168, 106, 0.2);
+  color: #f1d7a0;
+  border: 1px solid rgba(201, 168, 106, 0.35);
+}
+
+.availability-awaiting {
+  background: rgba(68, 68, 68, 0.9);
+  color: #eee;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.availability-completed {
+  background: rgba(46, 102, 46, 0.2);
+  color: #b8edc0;
+  border: 1px solid rgba(46, 102, 46, 0.35);
+}
+
+.availability-unavailable {
+  background: rgba(102, 17, 17, 0.2);
+  color: #ffb0b0;
+  border: 1px solid rgba(102, 17, 17, 0.35);
 }
 
 .status-pending {
@@ -32,11 +102,13 @@
 .status-in-progress {
   background: #c9a86a;
   color: #111;
+  box-shadow: 0 0 10px rgba(201, 168, 106, 0.45);
 }
 
 .status-completed {
   background: #2e662e;
   color: #eee;
+  box-shadow: 0 0 10px rgba(46, 102, 46, 0.45);
 }
 
 .apptcard-body {
@@ -57,6 +129,7 @@
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
+  transition: 0.3s ease;
 }
 
 .apptcard-btn:hover {
@@ -79,4 +152,29 @@
 
 .apptcard-msg-btn:hover {
   background: #444;
+}
+
+@media (max-width: 720px) {
+  .apptcard {
+    padding: 16px;
+  }
+
+  .apptcard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .apptcard-status {
+    align-self: flex-start;
+  }
+
+  .apptcard-actions {
+    flex-direction: column;
+  }
+
+  .apptcard-btn {
+    width: 100%;
+    text-align: center;
+  }
 }

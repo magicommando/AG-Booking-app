@@ -1,22 +1,54 @@
 .firearmcard {
-  background: #1a1a1a;
+  background: rgba(26, 26, 26, 0.75);
   border: 1px solid #333;
   padding: 20px;
   border-radius: 8px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.3s ease;
   margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
 }
 
+.firearmcard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 120%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(201, 168, 106, 0.25) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: all 0.8s ease;
+  pointer-events: none;
+}
+
+
+
 .firearmcard:hover {
-  background: #222;
-  border-color: #444;
+  border-color: #c9a86a;
+  box-shadow: 0 0 12px rgba(201, 168, 106, 0.35);
+}
+
+.firearmcard.is-selected {
+  border-color: #00ffff;
+  box-shadow: 0 0 14px rgba(0, 255, 255, 0.35);
+}
+
+.firearmcard:hover::before {
+  left: 150%;
 }
 
 .firearmcard-title {
   color: #c9a86a;
   margin-bottom: 10px;
-  font-size: 20px;
+  font-size: 25px;
 }
 
 .firearmcard-body {
@@ -41,4 +73,9 @@
 
 .firearmcard-btn:hover {
   background: #d4b47a;
+}
+
+.firearmcard-btn:disabled {
+  opacity: 0.8;
+  cursor: default;
 }

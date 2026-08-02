@@ -1,22 +1,47 @@
 .landing-container {
-  font-family: Arial, sans-serif;
   color: #eee;
-  background: #111;
+  background:
+    linear-gradient(rgba(8, 8, 8, 0.45), rgba(8, 8, 8, 0.45)),
+    url("../assets/twin-buttes-bg.png") center/cover no-repeat;
+  background-attachment: fixed;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
 }
 
+/* Soft vignette */
+.landing-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(8, 8, 8, 0.15) 0%, rgba(8, 8, 8, 0.55) 100%);
+  z-index: 0;
+}
+
+.landing-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
 .landing-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
-  background: #1a1a1a;
+  background: rgba(26, 26, 26, 0.75);
   border-bottom: 2px solid #333;
+  backdrop-filter: blur(4px);
 }
 
 .brand-title {
   font-size: 28px;
   font-weight: bold;
-  color: #c9a86a; /* brass tone */
+  color: #c9a86a;
+  text-shadow: 0 0 10px rgba(201, 168, 106, 0.35);
+  text-transform: uppercase;
 }
 
 .landing-nav a {
@@ -24,18 +49,44 @@
   color: #eee;
   text-decoration: none;
   font-size: 18px;
+  transition: 0.3s ease;
 }
 
+.landing-nav a:hover {
+  color: #c9a86a;
+}
+
+/* Hero Section */
 .hero-section {
-  padding: 80px 20px;
+  padding: 100px 20px;
   text-align: center;
-  background: url("../assets/logo.png") center/cover no-repeat;
-  background-size: contain;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.hero-content h2 {
-  font-size: 40px;
-  margin-bottom: 20px;
+.hero-logo {
+  width: 400px;
+  margin-bottom: 1px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  filter: drop-shadow(0 0 12px #c9a86a);
+  animation: fadeInLogo 1.2s ease;
+}
+
+@keyframes fadeInLogo {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-content {
+  animation: fadeInContent 1.2s ease;
+}
+
+@keyframes fadeInContent {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .hero-content p {
@@ -44,25 +95,52 @@
   margin: 0 auto 30px;
 }
 
+/* Buttons */
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 30px;
+}
+
 .hero-buttons .primary-btn,
 .hero-buttons .secondary-btn {
   padding: 12px 24px;
-  margin: 10px;
   border-radius: 6px;
   text-decoration: none;
+  width: 200px;
+  text-align: center;
   font-size: 18px;
+  margin: 0 auto;
+  transition: 0.3s ease;
 }
 
+/* Brass button */
 .primary-btn {
-  background: #c9a86a;
+  background: linear-gradient(90deg, #c9a86a 0%, #e0c58d 100%);
   color: #111;
+  box-shadow: 0 0 10px rgba(201, 168, 106, 0.35);
 }
 
+.primary-btn:hover {
+  background: linear-gradient(90deg, #d4b47a 0%, #f0d49a 100%);
+  box-shadow: 0 0 14px rgba(201, 168, 106, 0.45);
+}
+
+/* Secondary button */
 .secondary-btn {
-  background: #333;
+  background: rgba(40, 40, 40, 0.85);
   color: #eee;
+  border: 1px solid #333;
+  backdrop-filter: blur(3px);
 }
 
+.secondary-btn:hover {
+  background: rgba(58, 58, 58, 0.95);
+}
+
+/* Features Section */
 .features-section {
   padding: 60px 20px;
   text-align: center;
@@ -76,25 +154,27 @@
 }
 
 .feature-card {
-  background: #1a1a1a;
+  background: rgba(26, 26, 26, 0.75);
   padding: 20px;
   border-radius: 8px;
   border: 1px solid #333;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 0 10px rgba(201, 168, 106, 0.25);
+  transition: 0.3s ease;
+}
+
+.feature-card:hover {
+  border-color: #c9a86a;
+  box-shadow: 0 0 14px rgba(201, 168, 106, 0.35);
 }
 
 .feature-card h4 {
   color: #c9a86a;
   margin-bottom: 10px;
+  text-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
 }
 
-.landing-footer {
-  text-align: center;
-  padding: 20px;
-  background: #1a1a1a;
-  border-top: 2px solid #333;
-  margin-top: 40px;
-}
-
+/* Services Section */
 .landing-services {
   margin-top: 40px;
 }
@@ -103,10 +183,26 @@
   color: #c9a86a;
   text-align: center;
   margin-bottom: 20px;
+  text-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
 }
 
 .landing-service-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
+}
+
+/* Footer */
+.landing-footer {
+  text-align: center;
+  padding: 20px;
+  background: rgba(26, 26, 26, 0.75);
+  border-top: 2px solid #333;
+  backdrop-filter: blur(4px);
+  margin-top: 40px;
+}
+
+.landing-footer p {
+  color: #ccc;
+  margin: 0;
 }

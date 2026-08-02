@@ -1,0 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700&family=Alegreya+Sans+SC:wght@500;700&family=Marcellus&family=Orbitron:wght@500;700&family=Rajdhani:wght@500;600;700&family=VT323&display=swap");
+
+:root {
+	--font-client-body: "Alegreya Sans", "Trebuchet MS", sans-serif;
+	--font-client-display: "Marcellus", "Georgia", serif;
+	--font-client-accent: "Alegreya Sans SC", "Trebuchet MS", sans-serif;
+	--font-admin-body: "Rajdhani", "Trebuchet MS", sans-serif;
+	--font-admin-display: "Orbitron", "Trebuchet MS", sans-serif;
+	--font-admin-terminal: "VT323", "Courier New", monospace;
+	--font-display-current: var(--font-client-display);
+	--font-body-current: var(--font-client-body);
+	--font-accent-current: var(--font-client-accent);
+	--font-mono-current: var(--font-admin-terminal);
+	--letter-spacing-display: 0.05em;
+	--letter-spacing-accent: 0.08em;
+}

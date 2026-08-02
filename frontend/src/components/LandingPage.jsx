@@ -1,9 +1,12 @@
 import ServiceCard from "./Services/ServiceCard";
 import { Link, useNavigate } from "react-router-dom";
+import { useAppState } from "../state/AppState";
+import logo from "../assets/logo.png";
 import "./LandingPage.css";
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { token } = useAppState();
 
   const featuredServices = [
     {
@@ -27,14 +30,11 @@ export default function LandingPage() {
     <div className="landing-container">
 
       <header className="landing-header">
-        <h1 className="brand-title">AG Gunsmithing</h1>
-        <nav className="landing-nav">
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-        </nav>
+        <h1 className="brand-title">Ashiwi Gunsmithing</h1>
       </header>
 
       <section className="hero-section">
+        <img src={logo} alt="Brand Logo" className="hero-logo" />
         <div className="hero-content">
           <h2>Precision. Expertise. AI‑Enhanced Gunsmithing.</h2>
           <p>
@@ -42,10 +42,12 @@ export default function LandingPage() {
             identify firearm issues faster and more accurately.
           </p>
 
-          <div className="hero-buttons">
-            <Link to="/register" className="primary-btn">Get Started</Link>
-            <Link to="/login" className="secondary-btn">Login</Link>
-          </div>
+          {!token && (
+            <div className="hero-buttons">
+              <Link to="/register" className="primary-btn">Get Started</Link>
+              <Link to="/login" className="secondary-btn">Login</Link>
+            </div>
+          )}
         </div>
       </section>
 

@@ -1,37 +1,269 @@
 .admindash-container {
   padding: 40px;
-  background: #111;
+  background:
+  linear-gradient(rgba(8, 8, 8, 0.45), rgba(8, 8, 8, 0.45)),
+  url("../../assets/Gunsmith-Dash-bg.png") center / cover no-repeat;
+  background-size: 120% 120%;
+  background-attachment: fixed;
   color: #eee;
   min-height: 100vh;
 }
 
 .admindash-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 }
+
 
 .admindash-header h2 {
   font-size: 34px;
-  color: #c9a86a; /* brass tone */
+  color: #c9a86a;
+  text-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
 }
 
 .admindash-subtitle {
   font-size: 18px;
   color: #ccc;
+  text-shadow: 0 0 6px rgba(0, 255, 255, 0.15);
 }
 
-.admindash-grid {
+.admindash-ai-panel {
+  width: min(300px, 100%);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 25px;
+  justify-items: center;
+  align-content: start;
+}
+
+.admindash-ai-avatar-wrap {
+  width: min(450px, 100%);
+}
+
+.admindash-ai-avatar-wrap .analyzer-avatar {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.admindash-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 25px;
+  align-items: start;
+}
+
+
+.admindash-cards-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 30px;
+  align-items: stretch;
+}
+
+
+.admindash-ai-controls {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.admindash-control-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 15px;
+  color: #dbe7df;
+  font-size: 0.92rem;
+}
+
+.admindash-control-input {
+  min-width: 92px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(201, 168, 106, 0.4);
+  background: rgba(18, 25, 28, 0.9);
+  color: #f2f4ef;
+}
+
+.admindash-audio-toggle {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(141, 247, 208, 0.38);
+  background: rgba(17, 25, 27, 0.92);
+  color: #d9efe7;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admindash-audio-toggle.enabled {
+  border-color: rgba(141, 247, 208, 0.72);
+  box-shadow: 0 0 12px rgba(141, 247, 208, 0.2);
+}
+
+.admindash-audio-toggle.disabled {
+  opacity: 0.78;
+}
+
+.admindash-rpg-box {
+  width: 100%;
+  min-height: 132px;
+  padding: 14px 18px;
+  border: 3px solid #cab071;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 25, 0.96), rgba(8, 14, 16, 0.95));
+  box-shadow:
+    0 0 0 2px rgba(34, 43, 45, 0.9) inset,
+    0 0 22px rgba(0, 255, 255, 0.16),
+    0 0 30px rgba(201, 168, 106, 0.12);
+  image-rendering: pixelated;
+}
+
+.admindash-rpg-box.severity-info {
+  border-color: #74e4c2;
+}
+
+.admindash-rpg-box.severity-warning {
+  border-color: #d5b66d;
+  box-shadow:
+    0 0 0 2px rgba(45, 37, 26, 0.9) inset,
+    0 0 22px rgba(213, 182, 109, 0.18),
+    0 0 30px rgba(201, 168, 106, 0.18);
+}
+
+.admindash-rpg-box.severity-critical {
+  border-color: #ff857d;
+  box-shadow:
+    0 0 0 2px rgba(58, 25, 24, 0.9) inset,
+    0 0 22px rgba(255, 133, 125, 0.2),
+    0 0 30px rgba(255, 91, 91, 0.18);
+}
+
+.admindash-rpg-speaker {
+  margin: 0 0 8px;
+  color: #8cf3cd;
+  font-family: var(--font-display-current);
+  letter-spacing: 0.09em;
+  font-size: 0.86rem;
+  text-transform: uppercase;
+}
+
+.admindash-rpg-line {
+  margin: 0;
+  color: #e5efe8;
+  font-family: var(--font-mono-current);
+  font-size: clamp(1.4rem, 2.5vw, 1.95rem);
+  line-height: 1.06;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 8px rgba(141, 247, 208, 0.35);
+  min-height: 70px;
+}
+
+.admindash-rpg-line.severity-info {
+  color: #d8f2e8;
+}
+
+.admindash-rpg-line.severity-warning {
+  color: #ffe5a0;
+  text-shadow: 0 0 8px rgba(255, 229, 160, 0.28);
+}
+
+.admindash-rpg-line.severity-critical {
+  color: #ffb1ab;
+  text-shadow: 0 0 10px rgba(255, 133, 125, 0.32);
+}
+
+.admindash-rpg-prompt {
+  margin: 8px 0 0;
+  color: #ffecb5;
+  font-family: var(--font-mono-current);
+  font-size: 1.35rem;
+  animation: rpgPromptBlink 0.95s step-start infinite;
+}
+
+.admindash-ai-metrics {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.admindash-ai-chip {
+  background: rgba(20, 20, 20, 0.84);
+  border: 1px solid rgba(141, 247, 208, 0.38);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.admindash-ai-chip.severity-warning {
+  border-color: rgba(213, 182, 109, 0.52);
+}
+
+.admindash-ai-chip.severity-critical {
+  border-color: rgba(255, 133, 125, 0.62);
+}
+
+.admindash-ai-chip.severity-info {
+  border-color: rgba(141, 247, 208, 0.38);
+}
+
+.admindash-ai-chip span {
+  color: #b8cfc4;
+  font-size: 0.88rem;
+}
+
+.admindash-ai-chip strong {
+  color: #fbe3a6;
+  font-family: var(--font-display-current);
+  font-size: 1.1rem;
 }
 
 .admindash-card {
-  background: #1a1a1a;
-  padding: 25px;
-  border-radius: 8px;
-  border: 1px solid #333;
+  background: rgba(26, 26, 26, 0.78);
+  padding: 5px;
+  width: 80%;
+  height: 210px;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 168, 106, 0.35);
   text-align: center;
+  backdrop-filter: blur(4px);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 10px rgba(0, 255, 255, 0.15),
+    inset 0 0 6px rgba(0, 255, 255, 0.08);
+}
+
+.admindash-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 120%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(201, 168, 106, 0.25) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: all 0.8s ease;
+  pointer-events: none;
+}
+
+.admindash-card:hover::before {
+  left: 150%;
+}
+
+.admindash-card:hover {
+  border-color: #c9a86a;
+  box-shadow: 0 0 12px rgba(201, 168, 106, 0.35);
 }
 
 .admindash-card h3 {
@@ -42,6 +274,7 @@
 .admindash-card p {
   color: #ccc;
   margin-bottom: 20px;
+  word-break: break-word;
 }
 
 .admindash-btn {
@@ -49,11 +282,135 @@
   padding: 10px 20px;
   background: #c9a86a;
   color: #111;
+  width: 100px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
+  font-size: 10px;
+  transition: 0.25s ease;
 }
 
 .admindash-btn:hover {
   background: #d4b47a;
+  box-shadow: 0 0 8px rgba(201, 168, 106, 0.35);
+}
+
+/* Optional glowing accent for active cards */
+.admindash-card.active {
+  box-shadow:
+    0 0 12px rgba(0, 255, 255, 0.25),
+    inset 0 0 8px rgba(0, 255, 255, 0.15);
+  border-color: #00ffff;
+}
+
+@keyframes rpgPromptBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.25; }
+}
+
+@media (max-width: 900px) {
+  .admindash-container {
+    background-size: cover;
+    background-position: center top;
+    background-attachment: scroll;
+  }
+
+  .admindash-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admindash-cards-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .admindash-card {
+    width: 100%;
+    height: auto;
+    min-height: 170px;
+  }
+
+  .admindash-ai-avatar-wrap .analyzer-avatar {
+    width: min(260px, 80vw);
+  }
+
+  .admindash-right-panel {
+  display: grid;
+  gap: 24px;
+}
+
+
+.admindash-ai-panel {
+  width: 100%;
+  display: grid;
+  gap: 20px;
+  justify-items: center;
+  align-content: start;
+}
+
+
+  .admindash-ai-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admindash-control-group {
+    justify-content: space-between;
+  }
+
+  .admindash-ai-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .admindash-container {
+    padding: 20px 14px;
+  }
+
+  .admindash-header h2 {
+    font-size: 28px;
+  }
+
+  .admindash-card {
+    min-height: 150px;
+    padding: 12px;
+  }
+
+  .admindash-card p {
+    margin-bottom: 14px;
+  }
+
+  .admindash-ai-chip {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .admindash-container {
+    padding: 14px 10px;
+  }
+
+  .admindash-card {
+    min-height: 0;
+    padding: 10px;
+  }
+
+  .admindash-btn {
+    width: 100%;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .admindash-header h2 {
+    font-size: 24px;
+  }
+
+  .admindash-subtitle {
+    font-size: 14px;
+  }
+
+  .admindash-rpg-line {
+    font-size: 1.1rem;
+    min-height: 0;
+  }
 }

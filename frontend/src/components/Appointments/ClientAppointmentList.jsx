@@ -5,18 +5,37 @@ import AppointmentCard from "./AppointmentCard";
 import "./AppointmentList.css";
 
 export default function ClientAppointmentList() {
-  const { token, role } = useAppState();
+  const { token, role, user } = useAppState();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadAppointments() {
       try {
+        if (!user?.id) {
+          setAppointments([]);
+          return;
+        }
+
         const res = await axios.get(
-          "http://localhost:5000/api/appointments/my",
+          `http://localhost:5000/api/appointments/client/${user.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setAppointments(res.data);
+
+        const normalized = (res.data || []).map((appt) => {
+          const timestamp = appt.date ? new Date(appt.date) : null;
+          const firearm = appt.firearm || appt.firearmId;
+
+          return {
+            ...appt,
+            service: appt.service || appt.serviceType || appt.serviceId?.name || "Service",
+            date: timestamp ? timestamp.toLocaleDateString() : "-",
+            time: appt.time || (timestamp ? timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "-"),
+            firearm
+          };
+        });
+
+        setAppointments(normalized);
       } catch (err) {
         console.error("Error loading client appointments:", err);
       } finally {
@@ -25,7 +44,7 @@ export default function ClientAppointmentList() {
     }
 
     loadAppointments();
-  }, [token]);
+  }, [token, user?.id]);
 
   if (loading) return <div className="apptlist-container">Loading...</div>;
 

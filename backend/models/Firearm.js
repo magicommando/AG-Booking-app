@@ -6,6 +6,7 @@ const firearmSchema = new mongoose.Schema({
   model: { type: String, required: true },
   serial: { type: String },
   caliber: { type: String },
+  type: { type: String },
   photos: [{ type: String }], // URLs or file paths
   notes: { type: String },
   createdAt: { type: Date, default: Date.now }

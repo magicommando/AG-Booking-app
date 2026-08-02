@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppState } from "../../state/AppState";
-import axios from "axios";
+import {
+  completeWorkOrder,
+  fetchWorkOrderById,
+  updateWorkOrder
+} from "../../services/workOrderService";
 import "./WorkOrderDetails.css";
 
 export default function WorkOrderDetails() {
@@ -10,30 +14,38 @@ export default function WorkOrderDetails() {
 
   const [workOrder, setWorkOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const [laborHours, setLaborHours] = useState(0);
-  const [partsUsed, setPartsUsed] = useState([]);
+  const [partsNeeded, setPartsNeeded] = useState([]);
   const [notes, setNotes] = useState("");
-  const [status, setStatus] = useState("pending");
+  const [progress, setProgress] = useState("not started");
+  const [notifyEmail, setNotifyEmail] = useState(false);
+  const [notifySms, setNotifySms] = useState(false);
+  const [completionMessage, setCompletionMessage] = useState("");
 
   const [newPart, setNewPart] = useState("");
 
   useEffect(() => {
     async function loadWorkOrder() {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/workorders/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+        setError("");
+        const data = await fetchWorkOrderById(id, token);
+
+        setWorkOrder(data);
+
+        setLaborHours(data.invoice?.laborTime ?? data.estimatedTime ?? 0);
+        setPartsNeeded(data.partsNeeded || []);
+        setNotes(data.notes || "");
+        setProgress(data.progress || "not started");
+        setNotifyEmail(Boolean(data.completionNotification?.email));
+        setNotifySms(Boolean(data.completionNotification?.sms));
+        setCompletionMessage(
+          data.completionNotification?.message || generateCompletionMessage(data)
         );
-
-        setWorkOrder(res.data);
-
-        setLaborHours(res.data.laborHours || 0);
-        setPartsUsed(res.data.partsUsed || []);
-        setNotes(res.data.notes || "");
-        setStatus(res.data.status || "pending");
       } catch (err) {
         console.error("Error loading work order:", err);
+        setError("Could not load this work order.");
       } finally {
         setLoading(false);
       }
@@ -42,18 +54,45 @@ export default function WorkOrderDetails() {
     loadWorkOrder();
   }, [id, token]);
 
+  function generateCompletionMessage(workOrderData) {
+    const appointment = workOrderData?.appointmentId;
+    const firearm = appointment?.firearmId;
+    const service = appointment?.serviceId;
+    const client = workOrderData?.clientName
+      || `${appointment?.clientId?.firstName || ""} ${appointment?.clientId?.lastName || ""}`.trim()
+      || appointment?.clientId?.fullName
+      || appointment?.clientId?.name
+      || appointment?.clientId?.email
+      || "Client";
+    const firearmName = `${firearm?.manufacturer || firearm?.make || "Firearm"} ${firearm?.model || ""}`.trim();
+    const serviceName = service?.name || appointment?.serviceType || "your service";
+    const appointmentDate = appointment?.date ? new Date(appointment.date).toLocaleDateString() : "your appointment date";
+
+    return `Hello ${client}, your ${firearmName} service (${serviceName}) from ${appointmentDate} has been completed. If you selected email or SMS updates, this is your completion notice. Reply with any follow-up questions.`;
+  }
+
   async function saveWorkOrder() {
     try {
-      await axios.put(
-        `http://localhost:5000/api/workorders/${id}`,
-        {
-          laborHours,
-          partsUsed,
-          notes,
-          status
+      const payload = {
+        partsNeeded,
+        estimatedTime: laborHours,
+        progress,
+        notes,
+        invoice: {
+          ...(workOrder?.invoice || {}),
+          laborTime: laborHours
         },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+        completionNotification: {
+          email: notifyEmail,
+          sms: notifySms,
+          message: completionMessage
+        }
+      };
+
+      const response = await updateWorkOrder(id, payload, token);
+      if (response?.workOrder) {
+        setWorkOrder(response.workOrder);
+      }
 
       alert("Work order updated");
     } catch (err) {
@@ -63,25 +102,33 @@ export default function WorkOrderDetails() {
 
   function addPart() {
     if (!newPart.trim()) return;
-    setPartsUsed([...partsUsed, newPart]);
+    setPartsNeeded([...partsNeeded, newPart.trim()]);
     setNewPart("");
   }
 
   function removePart(index) {
-    setPartsUsed(partsUsed.filter((_, i) => i !== index));
+    setPartsNeeded(partsNeeded.filter((_, i) => i !== index));
   }
 
   async function finalizeWorkOrder() {
     if (!window.confirm("Mark this work order as completed?")) return;
 
     try {
-      await axios.put(
-        `http://localhost:5000/api/workorders/${id}/complete`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await completeWorkOrder(id, token, {
+        completionNotification: {
+          email: notifyEmail,
+          sms: notifySms,
+          message: completionMessage
+        }
+      });
+      if (response?.workOrder) {
+        setWorkOrder(response.workOrder);
+        setNotifyEmail(Boolean(response.workOrder.completionNotification?.email));
+        setNotifySms(Boolean(response.workOrder.completionNotification?.sms));
+        setCompletionMessage(response.workOrder.completionNotification?.message || completionMessage);
+      }
 
-      setStatus("completed");
+      setProgress("completed");
       alert("Work order marked as completed");
     } catch (err) {
       console.error("Error finalizing work order:", err);
@@ -89,9 +136,19 @@ export default function WorkOrderDetails() {
   }
 
   if (loading) return <div className="wo-details-container">Loading...</div>;
-  if (!workOrder) return <div className="wo-details-container">Work order not found.</div>;
+  if (!workOrder) return <div className="wo-details-container">{error || "Work order not found."}</div>;
 
-  const { appointment, firearm, aiDiagnostics } = workOrder;
+  const appointment = workOrder.appointmentId;
+  const firearm = appointment?.firearmId;
+  const service = appointment?.serviceId;
+  const date = appointment?.date ? new Date(appointment.date) : null;
+  const clientName = workOrder.clientName
+    || `${appointment?.clientId?.firstName || ""} ${appointment?.clientId?.lastName || ""}`.trim()
+    || appointment?.clientId?.fullName
+    || appointment?.clientId?.name
+    || appointment?.clientId?.email
+    || "N/A";
+  const acceptedDate = workOrder.acceptedAt ? new Date(workOrder.acceptedAt) : null;
 
   return (
     <div className="wo-details-container">
@@ -100,26 +157,18 @@ export default function WorkOrderDetails() {
       {/* Appointment Info */}
       <div className="wo-details-card">
         <h3>Appointment</h3>
-        <p><strong>Service:</strong> {appointment?.service}</p>
-        <p><strong>Date:</strong> {appointment?.date}</p>
-        <p><strong>Time:</strong> {appointment?.time}</p>
+        <p><strong>Client:</strong> {clientName}</p>
+        <p><strong>Date Accepted:</strong> {acceptedDate ? acceptedDate.toLocaleString() : "N/A"}</p>
+        <p><strong>Service:</strong> {service?.name || appointment?.serviceType || "N/A"}</p>
+        <p><strong>Date:</strong> {date ? date.toLocaleDateString() : "N/A"}</p>
+        <p><strong>Time:</strong> {date ? date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "N/A"}</p>
       </div>
 
       {/* Firearm Info */}
       <div className="wo-details-card">
         <h3>Firearm</h3>
-        <p>{firearm?.make} {firearm?.model}</p>
+        <p>{firearm?.manufacturer} {firearm?.model}</p>
         <p><strong>Serial:</strong> {firearm?.serial}</p>
-      </div>
-
-      {/* AI Diagnostics */}
-      <div className="wo-details-card">
-        <h3>AI Diagnostics</h3>
-        {aiDiagnostics ? (
-          <pre>{JSON.stringify(aiDiagnostics, null, 2)}</pre>
-        ) : (
-          <p>No AI diagnostics available.</p>
-        )}
       </div>
 
       {/* Labor */}
@@ -138,7 +187,7 @@ export default function WorkOrderDetails() {
         <h3>Parts Used</h3>
 
         <ul className="wo-parts-list">
-          {partsUsed.map((p, i) => (
+          {partsNeeded.map((p, i) => (
             <li key={i}>
               {p}
               <button className="wo-remove-btn" onClick={() => removePart(i)}>
@@ -175,13 +224,42 @@ export default function WorkOrderDetails() {
         <h3>Status</h3>
         <select
           className="wo-input"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          value={progress}
+          onChange={(e) => setProgress(e.target.value)}
         >
-          <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
+          <option value="not started">Not Started</option>
+          <option value="in progress">In Progress</option>
           <option value="completed">Completed</option>
         </select>
+      </div>
+
+      <div className="wo-details-card">
+        <h3>Completion Notification</h3>
+        <div className="wo-notify-options">
+          <label className="wo-checkbox-row">
+            <input
+              type="checkbox"
+              checked={notifyEmail}
+              onChange={(e) => setNotifyEmail(e.target.checked)}
+            />
+            Send Email Notification
+          </label>
+          <label className="wo-checkbox-row">
+            <input
+              type="checkbox"
+              checked={notifySms}
+              onChange={(e) => setNotifySms(e.target.checked)}
+            />
+            Send SMS Notification
+          </label>
+        </div>
+
+        <p className="wo-notify-helper">Auto-generated message based on the approved firearm appointment.</p>
+        <textarea
+          className="wo-textarea"
+          value={completionMessage}
+          onChange={(e) => setCompletionMessage(e.target.value)}
+        />
       </div>
 
       {/* Actions */}

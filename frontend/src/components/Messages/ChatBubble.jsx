@@ -1,19 +1,22 @@
 import "./ChatBubble.css";
 
 export default function ChatBubble({ message, isSender }) {
+  const content = message?.content || message?.text || "";
+  const timeSource = message?.createdAt || message?.timestamp;
+  const timeLabel = timeSource
+    ? new Date(timeSource).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
+      })
+    : "";
+
   return (
     <div className={`chatbubble ${isSender ? "sender" : "receiver"}`}>
       <div className="chatbubble-content">
-        <p>{message.text}</p>
-        <small>{new Date(message.createdAt).toLocaleTimeString()}</small>
+        <p>{content}</p>
       </div>
 
-      <div className="chatbubble-time">
-        {new Date(message.timestamp).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit"
-        })}
-      </div>
+      {timeLabel && <div className="chatbubble-time">{timeLabel}</div>}
     </div>
   );
 }
