@@ -27,10 +27,17 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+const frontendBuildPath = path.resolve(__dirname, 'frontend', 'build');
+const frontendIndexPath = path.join(frontendBuildPath, 'index.html');
+
 // global middleware
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(uploadsDir));
+
+if (fs.existsSync(frontendBuildPath)) {
+  app.use(express.static(frontendBuildPath));
+}
 
 // Lightweight liveness endpoint for platform healthchecks.
 app.get('/health', (req, res) => {
@@ -65,10 +72,26 @@ app.use('/api/workorders', workOrderRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/schedule', scheduleRoutes);
+
+if (fs.existsSync(frontendIndexPath)) {
+  app.get(/^(?!\/api(?:\/|$)|\/uploads(?:\/|$)|\/health(?:\/|$)).*/, (req, res, next) => {
+    res.sendFile(frontendIndexPath, (err) => {
+      if (err) {
+        next(err);
+      }
+    });
+  });
+}
+
 app.use(errorHandler);
 
-// Root route: redirect to frontend when configured, otherwise show a small API status payload.
+// Root route: serve the built frontend when available, otherwise fall back to the API status payload.
 app.get('/', (req, res) => {
+  if (fs.existsSync(frontendIndexPath)) {
+    res.sendFile(frontendIndexPath);
+    return;
+  }
+
   const frontendUrl = process.env.FRONTEND_URL;
   if (frontendUrl) {
     res.redirect(frontendUrl);
