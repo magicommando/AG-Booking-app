@@ -8,6 +8,7 @@
   },
   "scripts": {
     "start": "node server.js",
+    "start:railway": "bash start.sh",
     "build": "echo \"Frontend build already bundled; skipping rebuild\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -21,6 +21,23 @@ const connectToMongo = require('./backend/config/db');
 
 // create express app
 const app = express();
+let server = null;
+
+const shutdown = (signal) => {
+  console.log(`Received ${signal}; shutting down gracefully`);
+  if (server) {
+    server.close(() => {
+      console.log('HTTP server closed');
+      process.exit(0);
+    });
+    setTimeout(() => process.exit(0), 5000);
+  } else {
+    process.exit(0);
+  }
+};
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
 
 const uploadsDir = path.resolve(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -137,7 +154,7 @@ mongoose.connection.on('disconnected', () => console.warn('Mongoose disconnected
 
 //  start the server only if this file is run directly (not imported)
 if (require.main === module) {
-  const PORT = process.env.PORT || 5000;
+  const PORT = Number(process.env.PORT || 5000);
   const REQUIRE_DB_ON_BOOT = String(process.env.REQUIRE_DB_ON_BOOT || '').toLowerCase() === 'true';
   const MONGO_RETRY_MS = Number(process.env.MONGO_RETRY_MS || 15000);
 
@@ -165,10 +182,17 @@ if (require.main === module) {
     return;
   }
 
-  app.listen(PORT, () => {
+  server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     connectToMongoWithRetry();
-  }).on('error', (err) => {
+  });
+
+  server.on('error', (err) => {
+    if (err && err.code === 'EADDRINUSE') {
+      console.warn(`Port ${PORT} is already in use; exiting gracefully`);
+      process.exit(0);
+    }
+
     console.error('Server failed to listen:', err.message || err);
     process.exit(1);
   });
