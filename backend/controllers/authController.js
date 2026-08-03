@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: 'JWT_SECRET is not configured on the server' });
+    }
     const {
       firstName,
       lastName,
@@ -65,6 +68,9 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: 'JWT_SECRET is not configured on the server' });
+    }
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });

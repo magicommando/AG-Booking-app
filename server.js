@@ -31,7 +31,12 @@ const frontendBuildPath = path.resolve(__dirname, 'frontend', 'build');
 const frontendIndexPath = path.join(frontendBuildPath, 'index.html');
 
 // global middleware
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use('/uploads', express.static(uploadsDir));
 
