@@ -8,10 +8,19 @@ export const authHeader = (token) => ({
 const AppStateContext = createContext();
 const AppDispatchContext = createContext();
 
+const getStoredUser = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    return JSON.parse(localStorage.getItem('user') || 'null');
+  } catch {
+    return null;
+  }
+};
+
 const initialState = {
-  token: localStorage.getItem("token"),
-  user: JSON.parse(localStorage.getItem("user") || "null"),
-  role: JSON.parse(localStorage.getItem("user") || "null")?.role || null,
+  token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
+  user: getStoredUser(),
+  role: getStoredUser()?.role || null,
   aiResult: null,
   photoUrl: null,
   inventoryItems: [],
@@ -74,11 +83,14 @@ export function AppStateProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   function loginUser(data) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
 
     dispatch({ type: "SET_TOKEN", payload: data.token });
     dispatch({ type: "SET_USER", payload: data.user });
+    dispatch({ type: "SET_ROLE", payload: data.user?.role || null });
   }
 
   function logoutUser() {

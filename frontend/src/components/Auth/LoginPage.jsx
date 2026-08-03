@@ -27,16 +27,16 @@ export default function Login() {
 
     try {
       const res = await api.post(loginUrl, form);
-
       const { token, user } = res.data;
 
-      // Save token globally + persist
-      dispatch({ type: "SET_TOKEN", payload: token });
-      dispatch({ type: "SET_USER", payload: user });
-      dispatch({ type: "SET_ROLE", payload: user.role });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      dispatch({ type: 'SET_TOKEN', payload: token });
+      dispatch({ type: 'SET_USER', payload: user });
+      dispatch({ type: 'SET_ROLE', payload: user.role });
 
       navigate(user.role === "gunsmith" || user.role === "admin" ? "/admin/dashboard" : "/dashboard");
     } catch (err) {
