@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppState } from "../../state/AppState";
-import axios from "axios";
+import api from "../../services/api";
 import AppointmentCard from "./AppointmentCard";
 import "./AppointmentList.css";
 
@@ -17,10 +17,9 @@ export default function ClientAppointmentList() {
           return;
         }
 
-        const res = await axios.get(
-          `http://localhost:5000/api/appointments/client/${user.id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await api.get(`/appointments/client/${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
 
         const normalized = (res.data || []).map((appt) => {
           const timestamp = appt.date ? new Date(appt.date) : null;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppState } from "../../state/AppState";
-import axios from "axios";
+import api from "../../services/api";
 import AppointmentCard from "./AppointmentCard";
 import "./AppointmentList.css";
 
@@ -17,10 +17,9 @@ export default function AdminAppointmentList() {
           return;
         }
 
-        const res = await axios.get(
-          `http://localhost:5000/api/appointments/gunsmith/${user.id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await api.get(`/appointments/gunsmith/${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         setAppointments(res.data);
       } catch (err) {
         console.error("Error loading client appointments:", err);

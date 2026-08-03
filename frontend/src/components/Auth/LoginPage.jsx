@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../state/AppState";
-import axios from "axios";
+import api from "../../services/api";
 import "./Auth.css";
+
+const loginUrl = "/auth/login";
 
 export default function Login() {
   const dispatch = useAppDispatch();
@@ -24,7 +26,7 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", form);
+      const res = await api.post(loginUrl, form);
 
       const { token, user } = res.data;
 
