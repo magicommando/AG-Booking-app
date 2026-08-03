@@ -67,8 +67,21 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use(errorHandler);
 
-// Root test route to check if the server is running and MongoDB connection status
+// Root route: redirect to frontend when configured, otherwise show a small API status payload.
 app.get('/', (req, res) => {
+  const frontendUrl = process.env.FRONTEND_URL;
+  if (frontendUrl) {
+    res.redirect(frontendUrl);
+    return;
+  }
+
+  res.json({
+    message: 'Awsiwi Gunsmithing API is running',
+    mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not connected'
+  });
+});
+
+app.get('/api', (req, res) => {
   res.json({
     message: 'Awsiwi Gunsmithing API is running',
     mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not connected'
