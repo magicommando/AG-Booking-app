@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "npm install --prefix frontend --omit=dev && npm run build --prefix frontend",
+    "build": "echo \"Frontend build already bundled; skipping rebuild\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
