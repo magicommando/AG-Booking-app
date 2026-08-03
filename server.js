@@ -75,10 +75,11 @@ app.get('/', (req, res) => {
   });
 });
 // Debug: show whether MONGO_URI was loaded (don't print the secret)
-if (process.env.MONGO_URI) {
-  console.log('MONGO_URI loaded:', process.env.MONGO_URI.startsWith('mongodb') ? 'yes' : 'no');
+const mongoFromEnv = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.DATABASE_URL;
+if (mongoFromEnv) {
+  console.log('Mongo URI loaded:', mongoFromEnv.startsWith('mongodb') ? 'yes' : 'no');
 } else {
-  console.warn('MONGO_URI not found in environment');
+  console.warn('Mongo URI not found. Expected one of: MONGO_URI, MONGODB_URI, DATABASE_URL');
 }
 
 // Log mongoose connection events for debugging
