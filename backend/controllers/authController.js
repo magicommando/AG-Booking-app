@@ -4,8 +4,9 @@ const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
+    const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret';
     if (!process.env.JWT_SECRET) {
-      return res.status(500).json({ message: 'JWT_SECRET is not configured on the server' });
+      console.warn('JWT_SECRET not configured; using development fallback');
     }
     const {
       firstName,
@@ -68,8 +69,9 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
+    const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret';
     if (!process.env.JWT_SECRET) {
-      return res.status(500).json({ message: 'JWT_SECRET is not configured on the server' });
+      console.warn('JWT_SECRET not configured; using development fallback');
     }
     const { email, password } = req.body;
 
@@ -81,7 +83,7 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id, role: user.role },
-      process.env.JWT_SECRET,
+      jwtSecret,
       { expiresIn: '7d' }
     );
 

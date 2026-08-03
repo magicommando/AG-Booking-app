@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppState, useAppDispatch } from "../../state/AppState";
-import axios from "axios";
+import api from "../../services/api";
 import "./SettingsPage.css";
 
 export default function SettingsPage() {
@@ -25,8 +25,7 @@ export default function SettingsPage() {
 
   async function updateProfile() {
     try {
-      const res = await axios.put(
-        "http://localhost:5000/api/users/profile",
+      const res = await api.put("/users/profile",
         {
           fullName: form.fullName,
           email: form.email,
@@ -51,8 +50,7 @@ export default function SettingsPage() {
     if (!window.confirm("Are you sure you want to delete your account?")) return;
 
     try {
-      await axios.delete(
-        "http://localhost:5000/api/users/delete",
+      await api.delete("/users/delete",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

@@ -1,5 +1,5 @@
 import { useAppState } from "../../state/AppState";
-import axios from "axios";
+import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import BookingProgress from "./BookingProgress";
@@ -27,8 +27,7 @@ export default function Step4Confirm() {
     setError("");
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/appointments",
+      await api.post("/appointments",
         {
           service: serviceName,
           firearmId: bookingFirearm._id,

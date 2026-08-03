@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 import { useAppState } from "../../state/AppState";
 import AdminCalendar from "./AdminCalendar";
 import "./AdminSchedule.css";
@@ -20,8 +20,7 @@ export default function AdminSchedule() {
 
     try {
       setError("");
-      const res = await axios.get(
-        `http://localhost:5000/api/schedule/${gunsmithId}/${day}`,
+      const res = await api.get(`/schedule/${gunsmithId}/${day}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSlots(Array.isArray(res.data) ? res.data : []);
@@ -57,8 +56,7 @@ export default function AdminSchedule() {
     if (!loggedInGunsmithId || !selectedDay || !token || !isGunsmith) return;
 
     try {
-      await axios.put(
-        `http://localhost:5000/api/schedule/${loggedInGunsmithId}/${selectedDay}`,
+      await api.put(`/schedule/${loggedInGunsmithId}/${selectedDay}`,
         slots,
         {
           headers: {

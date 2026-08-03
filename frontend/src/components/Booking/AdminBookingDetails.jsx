@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppState } from "../../state/AppState";
-import axios from "axios";
+import api from "../../services/api";
 import { createWorkOrder } from "../../services/workOrderService";
 import AdminCalendar from "./AdminCalendar";
 import ClientSideTimeSelect from "./ClientSideTimeSelect";
@@ -24,7 +24,7 @@ export default function AdminBookingDetails() {
   useEffect(() => {
     async function loadAppointment() {
       try {
-        const res = await axios.get(`http://localhost:5000/api/appointments/${id}`, {
+        const res = await api.get(`/appointments/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -59,8 +59,7 @@ export default function AdminBookingDetails() {
     setMessage("");
 
     try {
-      const res = await axios.put(
-        `http://localhost:5000/api/appointments/${id}/admin`,
+      const res = await api.put(`/appointments/${id}/admin`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );

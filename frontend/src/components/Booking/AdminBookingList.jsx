@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppState } from "../../state/AppState";
-import axios from "axios";
+import api from "../../services/api";
 import "./AdminBooking.css";
 
 export default function AdminBookingList() {
@@ -18,8 +18,7 @@ export default function AdminBookingList() {
           return;
         }
 
-        const res = await axios.get(
-          `http://localhost:5000/api/appointments/gunsmith/${user.id}`,
+        const res = await api.get(`/appointments/gunsmith/${user.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 

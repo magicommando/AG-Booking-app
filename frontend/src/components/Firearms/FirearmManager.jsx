@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAppState } from "../../state/AppState";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 import "./FirearmManager.css";
 
 export default function FirearmManager() {
@@ -27,8 +27,7 @@ export default function FirearmManager() {
   useEffect(() => {
     async function loadFirearms() {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/firearms",
+        const res = await api.get("/firearms",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setFirearms(res.data);
@@ -64,15 +63,13 @@ export default function FirearmManager() {
   async function saveFirearm() {
     try {
       if (editFirearm) {
-        const res = await axios.put(
-          `http://localhost:5000/api/firearms/${editFirearm._id}`,
+        const res = await api.put(`/firearms/${editFirearm._id}`,
           form,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setFirearms((prev) => prev.map((f) => (f._id === editFirearm._id ? res.data.firearm : f)));
       } else {
-        const res = await axios.post(
-          "http://localhost:5000/api/firearms",
+        const res = await api.post("/firearms",
           form,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -92,8 +89,7 @@ export default function FirearmManager() {
     if (!window.confirm("Delete this firearm?")) return;
 
     try {
-      await axios.delete(
-        `http://localhost:5000/api/firearms/${id}`,
+      await api.delete(`/firearms/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
