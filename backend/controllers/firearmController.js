@@ -26,7 +26,7 @@ function normalizeFirearmPayload(body = {}) {
 
 exports.listFirearms = async (req, res) => {
   try {
-    const query = req.user.role === 'client'
+    const query = req.user?.role === 'client'
       ? { userId: req.user.userId }
       : {};
 
@@ -35,6 +35,7 @@ exports.listFirearms = async (req, res) => {
       .sort({ createdAt: -1 });
     res.json(firearms);
   } catch (err) {
+    console.error('List firearms error:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -43,14 +44,20 @@ exports.addFirearm = async (req, res) => {
   try {
     const { userId } = req.body;
     const normalized = normalizeFirearmPayload(req.body);
+    const ownerId = userId || req.user?.userId;
+
+    if (!ownerId) {
+      return res.status(400).json({ message: 'Authenticated user is required to create a firearm' });
+    }
 
     const firearm = await Firearm.create({
-      userId: userId || req.user?.userId,
+      userId: ownerId,
       ...normalized
     });
 
     res.json({ message: 'Firearm added', firearm });
   } catch (err) {
+    console.error('Add firearm error:', err);
     res.status(500).json({ error: err.message });
   }
 };
