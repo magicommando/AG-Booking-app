@@ -32,6 +32,15 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(uploadsDir));
 
+// Lightweight liveness endpoint for platform healthchecks.
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: Math.round(process.uptime()),
+    mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not connected'
+  });
+});
+
 // Routes
 const authRoutes = require('./backend/routes/authRoutes');
 const firearmRoutes = require('./backend/routes/firearmRoutes');
@@ -80,17 +89,40 @@ mongoose.connection.on('disconnected', () => console.warn('Mongoose disconnected
 //  start the server only if this file is run directly (not imported)
 if (require.main === module) {
   const PORT = process.env.PORT || 5000;
+  const REQUIRE_DB_ON_BOOT = String(process.env.REQUIRE_DB_ON_BOOT || '').toLowerCase() === 'true';
+  const MONGO_RETRY_MS = Number(process.env.MONGO_RETRY_MS || 15000);
 
-  connectToMongo()
-    .then(() => {
-      app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+  const connectToMongoWithRetry = () => {
+    connectToMongo()
+      .catch((err) => {
+        console.error(`Mongo connect failed; retrying in ${MONGO_RETRY_MS}ms:`, err.message || err);
+        setTimeout(connectToMongoWithRetry, MONGO_RETRY_MS);
       });
-    })
-    .catch((err) => {
-      console.error('Failed to start server due to MongoDB connection error:', err.message || err);
-      process.exit(1);
-    });
+  };
+
+  // Strict mode is available when DB must be up before serving requests.
+  if (REQUIRE_DB_ON_BOOT) {
+    connectToMongo()
+      .then(() => {
+        app.listen(PORT, () => {
+          console.log(`Server running on port ${PORT}`);
+        });
+      })
+      .catch((err) => {
+        console.error('Failed to start server due to MongoDB connection error:', err.message || err);
+        process.exit(1);
+      });
+
+    return;
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    connectToMongoWithRetry();
+  }).on('error', (err) => {
+    console.error('Server failed to listen:', err.message || err);
+    process.exit(1);
+  });
 }
 
 module.exports = app;
