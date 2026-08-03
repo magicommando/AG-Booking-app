@@ -115,7 +115,7 @@ app.get('/api', (req, res) => {
     mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not connected'
   });
 });
-// Debug: show whether MONGO_URI was loaded (don't print the secret)
+// Debug: show whether MongoDB and JWT settings were loaded (don't print the secret)
 const mongoFromEnv =
   process.env.MONGO_URI ||
   process.env.MONGODB_URI ||
@@ -123,10 +123,12 @@ const mongoFromEnv =
   process.env.MONGO_URL ||
   process.env.MONGO_PRIVATE_URL;
 if (mongoFromEnv) {
-  console.log('Mongo URI loaded:', mongoFromEnv.startsWith('mongodb') ? 'yes' : 'no');
+  console.log('Mongo URI loaded: yes');
 } else {
   console.warn('Mongo URI not found. Expected one of: MONGO_URI, MONGODB_URI, DATABASE_URL, MONGO_URL, MONGO_PRIVATE_URL');
 }
+
+console.log('JWT_SECRET configured:', process.env.JWT_SECRET ? 'yes' : 'no');
 
 // Log mongoose connection events for debugging
 mongoose.connection.on('connected', () => console.log('Mongoose connected'));
