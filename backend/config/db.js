@@ -1,10 +1,15 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
-  const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.DATABASE_URL;
+  const mongoUri =
+    process.env.MONGO_URI ||
+    process.env.MONGODB_URI ||
+    process.env.DATABASE_URL ||
+    process.env.MONGO_URL ||
+    process.env.MONGO_PRIVATE_URL;
 
   if (!mongoUri) {
-    throw new Error('No Mongo connection string found. Set MONGO_URI, MONGODB_URI, or DATABASE_URL.');
+    throw new Error('No Mongo connection string found. Set one of: MONGO_URI, MONGODB_URI, DATABASE_URL, MONGO_URL, MONGO_PRIVATE_URL.');
   }
 
   try {
