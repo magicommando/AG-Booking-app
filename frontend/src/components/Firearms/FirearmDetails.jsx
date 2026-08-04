@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppState } from "../../state/AppState";
-import api from "../../services/api";
+import api, { resolveAssetUrl } from "../../services/api";
 import { uploadPhoto as uploadAiPhoto } from "../../services/aiService";
 import "./FirearmDetails.css";
 
@@ -17,6 +17,10 @@ export default function FirearmDetails({ firearm }) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState("");
+  const [notesInput, setNotesInput] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
+  const [notesError, setNotesError] = useState("");
+  const [notesSuccess, setNotesSuccess] = useState("");
 
   useEffect(() => {
     if (firearm || !id || !activeToken) {
@@ -41,6 +45,12 @@ export default function FirearmDetails({ firearm }) {
   }, [firearm, id, activeToken]);
 
   const activeFirearm = useMemo(() => firearm || loadedFirearm, [firearm, loadedFirearm]);
+
+  useEffect(() => {
+    if (activeFirearm?.notes !== undefined) {
+      setNotesInput(activeFirearm.notes || "");
+    }
+  }, [activeFirearm?.notes]);
 
   async function handlePhotoUpload(event) {
     const selectedFile = event.target.files?.[0];
@@ -79,6 +89,33 @@ export default function FirearmDetails({ firearm }) {
     }
   }
 
+  async function handleNotesSave() {
+    if (!activeFirearm?._id || !activeToken) {
+      return;
+    }
+
+    try {
+      setSavingNotes(true);
+      setNotesError("");
+      setNotesSuccess("");
+
+      const res = await api.put(
+        `/firearms/${activeFirearm._id}`,
+        { notes: notesInput },
+        { headers: { Authorization: `Bearer ${activeToken}` } }
+      );
+
+      const updatedNotes = res?.data?.firearm?.notes ?? notesInput;
+      setLoadedFirearm((prev) => prev ? { ...prev, notes: updatedNotes } : prev);
+      setNotesInput(updatedNotes);
+      setNotesSuccess("Notes saved.");
+    } catch (err) {
+      setNotesError(err.response?.data?.message || err.response?.data?.error || "Failed to save notes.");
+    } finally {
+      setSavingNotes(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="firearm-details-page">
@@ -112,9 +149,7 @@ export default function FirearmDetails({ firearm }) {
   const caliber = activeFirearm.caliber || "-";
   const type = activeFirearm.type || "-";
 
-  const photoUrls = normalizedPhotos.map((url) =>
-    url.startsWith("http") ? url : `${window.location.origin}${url}`
-  );
+  const photoUrls = normalizedPhotos.map((url) => resolveAssetUrl(url));
 
   return (
     <div className="firearm-details-page">
@@ -157,9 +192,27 @@ export default function FirearmDetails({ firearm }) {
             <p><strong>Manufacturer:</strong> {make}</p>
             <p><strong>Serial Number:</strong> {serial}</p>
 
-            <p className="firearm-details-notes">
-              <strong>Notes:</strong> {notes || "No notes provided."}
-            </p>
+            <div className="firearm-details-notes-card">
+              <label htmlFor="firearm-notes" className="firearm-details-notes-label">Notes</label>
+              <textarea
+                id="firearm-notes"
+                value={notesInput}
+                onChange={(e) => setNotesInput(e.target.value)}
+                className="firearm-details-notes-input"
+                rows={5}
+                placeholder="Add notes about this firearm, maintenance history, or service requests..."
+              />
+              <button
+                type="button"
+                className="firearm-details-btn"
+                onClick={handleNotesSave}
+                disabled={savingNotes}
+              >
+                {savingNotes ? "Saving..." : "Save notes"}
+              </button>
+              {notesError ? <p className="firearm-details-error">{notesError}</p> : null}
+              {notesSuccess ? <p className="firearm-details-success">{notesSuccess}</p> : null}
+            </div>
 
             <div className="firearm-details-actions">
               <label className="firearm-details-upload">

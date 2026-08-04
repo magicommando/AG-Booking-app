@@ -6,7 +6,7 @@ import { fetchInventoryItems } from "../../services/inventoryService";
 import FirearmCard from "../Firearms/FirearmCard";
 import AnalyzerAvatar from "../../Pages/analyzer/AnalyzerAvatar";
 import AnalyzerResults from "../../Pages/analyzer/AnalyzerResults";
-import api from "../../services/api";
+import api, { resolveAssetUrl } from "../../services/api";
 import "./AIAnalyzer.css";
 
 const AVATAR_TAGLINE = "ZUNI ARMS SYSTEM // AI ANALYSIS ONLINE";
@@ -25,9 +25,7 @@ export default function AIAnalyzer() {
   const [inventoryScanResults, setInventoryScanResults] = useState([]);
   const [scannedItemCount, setScannedItemCount] = useState(0);
 
-  const resolvedPhotoUrl = photoUrl
-    ? (photoUrl.startsWith("http") ? photoUrl : `${window.location.origin}${photoUrl}`)
-    : null;
+  const resolvedPhotoUrl = photoUrl ? resolveAssetUrl(photoUrl) : null;
 
   useEffect(() => {
     setDialog("Ready for tactical diagnostics.");

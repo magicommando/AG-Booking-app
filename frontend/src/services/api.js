@@ -8,7 +8,8 @@ const getApiOrigin = () => {
 
   if (typeof window !== 'undefined') {
     const currentOrigin = window.location.origin;
-    if (currentOrigin && currentOrigin !== 'http://localhost:3000') {
+    const isLocalOrigin = /^(http:\/\/localhost|http:\/\/127\.0\.0\.1)/i.test(currentOrigin);
+    if (currentOrigin && !isLocalOrigin) {
       return currentOrigin;
     }
   }
@@ -21,6 +22,14 @@ export const getBaseUrl = () => `${getApiOrigin()}/api`;
 export const getApiUrl = (path = '') => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   return `${getBaseUrl()}${normalizedPath}`;
+};
+
+export const resolveAssetUrl = (url) => {
+  if (!url) return null;
+  if (typeof url !== 'string') return null;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  const normalizedPath = url.startsWith('/') ? url : `/${url}`;
+  return `${getApiOrigin()}${normalizedPath}`;
 };
 
 const api = axios.create({
