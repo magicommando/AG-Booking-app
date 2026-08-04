@@ -46,6 +46,7 @@ import WorkOrderDetails from "./components/WorkOrders/WorkOrderDetails";
 import AIAnalyzer from "./components/AI/AIAnalyzer";
 
 import SettingsPage from "./components/Settings/SettingsPage";
+import BillingPage from "./components/Billing/BillingPage";
 
 function ProtectedRoute({ children }) {
   const { token } = useAppState();
@@ -346,6 +347,14 @@ function AppRouter() {
         element={
           <ProtectedRoute>
             <SettingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/billing"
+        element={
+          <ProtectedRoute>
+            <BillingPage />
           </ProtectedRoute>
         }
       />

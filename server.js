@@ -81,6 +81,7 @@ const workOrderRoutes = require('./backend/routes/workOrderRoutes');
 const inventoryRoutes = require('./backend/routes/inventoryRoutes');
 const messageRoutes = require('./backend/routes/messageRoutes');
 const scheduleRoutes = require('./backend/routes/scheduleRoutes');
+const billingRoutes = require('./backend/routes/billingRoutes');
 const errorHandler = require('./backend/middleware/errorHandler');
 
 // Mount routes
@@ -94,6 +95,7 @@ app.use('/api/workorders', workOrderRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/schedule', scheduleRoutes);
+app.use('/api/billing', billingRoutes);
 
 if (fs.existsSync(frontendIndexPath)) {
   app.get(/^(?!\/api(?:\/|$)|\/uploads(?:\/|$)|\/health(?:\/|$)).*/, (req, res, next) => {

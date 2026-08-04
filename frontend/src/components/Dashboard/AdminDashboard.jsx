@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import api from "../../services/api";
 import { fetchInventoryItems } from "../../services/inventoryService";
 import AnalyzerAvatar from "../../Pages/analyzer/AnalyzerAvatar";
+import BillingDashboardCard from "../Billing/BillingDashboardCard";
 import "./AdminDashboard.css";
 
 const BOOKING_WINDOW_OPTIONS = [12, 24, 48, 168];
@@ -278,6 +279,9 @@ export default function AdminDashboard() {
               <Link to={card.to} className="admindash-btn">{card.cta}</Link>
             </div>
           ))}
+          <div className="admindash-card">
+            <BillingDashboardCard />
+          </div>
         </div>
 
         <section className="admindash-ai-panel">
