@@ -126,3 +126,49 @@
 .firearm-select-btn:hover {
   background: #d4b47a;
 }
+
+.firearm-details-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.firearm-details-upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #c9a86a;
+  background: rgba(201, 168, 106, 0.15);
+  color: #f6d7a4;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.firearm-details-upload input {
+  display: none;
+}
+
+.firearm-details-btn {
+  width: fit-content;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #c9a86a;
+  color: #111;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.firearm-details-error {
+  color: #ff9e9e;
+  margin: 0;
+}
+
+.firearm-details-success {
+  color: #9ef0ae;
+  margin: 0;
+}

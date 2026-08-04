@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
   location: { type: String },
   billingAddress: { type: String },
   preferredContactMethod: { type: String, enum: ['email', 'phone', 'sms'] },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
   createdAt: { type: Date, default: Date.now }
 });
 

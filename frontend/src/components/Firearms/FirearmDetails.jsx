@@ -1,16 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useAppState } from "../../state/AppState";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppState } from "../../state/AppState";
 import api from "../../services/api";
+import { uploadPhoto as uploadAiPhoto } from "../../services/aiService";
 import "./FirearmDetails.css";
 
 export default function FirearmDetails({ firearm }) {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { token, role } = useAppState();
   const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const activeToken = token || storedToken;
   const [loadedFirearm, setLoadedFirearm] = useState(null);
   const [loading, setLoading] = useState(!firearm);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [uploadSuccess, setUploadSuccess] = useState("");
 
   useEffect(() => {
     if (firearm || !id || !activeToken) {
@@ -35,6 +41,43 @@ export default function FirearmDetails({ firearm }) {
   }, [firearm, id, activeToken]);
 
   const activeFirearm = useMemo(() => firearm || loadedFirearm, [firearm, loadedFirearm]);
+
+  async function handlePhotoUpload(event) {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile || !activeFirearm?._id || !activeToken) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("photo", selectedFile);
+
+    try {
+      setUploading(true);
+      setUploadError("");
+      setUploadSuccess("");
+
+      const aiUploadResponse = await uploadAiPhoto(activeToken, formData);
+      const uploadedUrl = aiUploadResponse?.photoUrl;
+
+      if (uploadedUrl) {
+        await api.put(
+          `/firearms/${activeFirearm._id}`,
+          {
+            photos: [...(activeFirearm.photos || []), uploadedUrl]
+          },
+          { headers: { Authorization: `Bearer ${activeToken}` } }
+        );
+
+        dispatch({ type: "SET_PHOTO_URL", payload: uploadedUrl });
+        setUploadSuccess("Photo uploaded, saved to the firearm, and ready for AI analysis.");
+        setLoadedFirearm((prev) => prev ? { ...prev, photos: [...(prev.photos || []), uploadedUrl] } : prev);
+      }
+    } catch (err) {
+      setUploadError(err.response?.data?.message || err.response?.data?.error || "Photo upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -117,6 +160,24 @@ export default function FirearmDetails({ firearm }) {
             <p className="firearm-details-notes">
               <strong>Notes:</strong> {notes || "No notes provided."}
             </p>
+
+            <div className="firearm-details-actions">
+              <label className="firearm-details-upload">
+                <input type="file" accept="image/*" onChange={handlePhotoUpload} />
+                <span>{uploading ? "Uploading..." : "Upload firearm photo"}</span>
+              </label>
+
+              {uploadError ? <p className="firearm-details-error">{uploadError}</p> : null}
+              {uploadSuccess ? <p className="firearm-details-success">{uploadSuccess}</p> : null}
+
+              <button
+                type="button"
+                className="firearm-details-btn"
+                onClick={() => navigate('/ai/analyze')}
+              >
+                Open AI analyzer
+              </button>
+            </div>
           </div>
         </div>
       </div>
