@@ -1,25 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppState } from "../../state/AppState";
-import axios from "axios";
+import api from "../../services/api";
 import "./FirearmDetails.css";
 
 export default function FirearmDetails({ firearm }) {
   const { id } = useParams();
   const { token, role } = useAppState();
+  const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const activeToken = token || storedToken;
   const [loadedFirearm, setLoadedFirearm] = useState(null);
   const [loading, setLoading] = useState(!firearm);
 
   useEffect(() => {
-    if (firearm || !id || !token) {
+    if (firearm || !id || !activeToken) {
       setLoading(false);
       return;
     }
 
     async function loadFirearm() {
       try {
-        const res = await axios.get(`http://localhost:5000/api/firearms/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const res = await api.get(`/firearms/${id}`, {
+          headers: { Authorization: `Bearer ${activeToken}` }
         });
         setLoadedFirearm(res.data);
       } catch (err) {
@@ -30,7 +32,7 @@ export default function FirearmDetails({ firearm }) {
     }
 
     loadFirearm();
-  }, [firearm, id, token]);
+  }, [firearm, id, activeToken]);
 
   const activeFirearm = useMemo(() => firearm || loadedFirearm, [firearm, loadedFirearm]);
 
@@ -68,7 +70,7 @@ export default function FirearmDetails({ firearm }) {
   const type = activeFirearm.type || "-";
 
   const photoUrls = normalizedPhotos.map((url) =>
-    url.startsWith("http") ? url : `http://localhost:5000${url}`
+    url.startsWith("http") ? url : `${window.location.origin}${url}`
   );
 
   return (
