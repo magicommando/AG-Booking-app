@@ -18,7 +18,7 @@ export default function Sidebar() {
           <Link to="/appointments">Appointments</Link>
           <Link to="/firearms">Firearms</Link>
           <Link to="/messages">Messages</Link>
-          <Link to="/billing">Billing</Link>
+          <Link to="/billing" className="sidebar-billing-link">Billing</Link>
           <Link to="/settings">Settings</Link>
         </nav>
       )}
@@ -32,7 +32,7 @@ export default function Sidebar() {
           <Link to="/admin/workorders">Work Orders</Link>
           <Link to="/admin/inventory">Inventory</Link>
           <Link to="/messages">Messages</Link>
-          <Link to="/billing">Billing</Link>
+          <Link to="/billing" className="sidebar-billing-link">Billing</Link>
           <Link to="/settings">Settings</Link>
         </nav>
       )}

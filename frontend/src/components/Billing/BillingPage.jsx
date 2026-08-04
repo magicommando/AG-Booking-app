@@ -4,6 +4,7 @@ import { getInvoices, payInvoice } from '../../services/billingService';
 import PaymentModal from './PaymentModal';
 import InvoiceViewer from './InvoiceViewer';
 import ReceiptViewer from './ReceiptViewer';
+import './BillingPage.css';
 
 export default function BillingPage() {
   const { token } = useAppState();
@@ -35,25 +36,35 @@ export default function BillingPage() {
   }
 
   return (
-    <div style={{ padding: 24 }}>
+    <div className="billing-page">
       <h2>Billing</h2>
+      <p className="billing-page-subtitle">Review invoices, payments, and receipts for your repair work.</p>
       {loading ? <p>Loading invoices...</p> : null}
-      <div style={{ display: 'grid', gap: 12 }}>
+
+      {!loading && invoices.length === 0 ? (
+        <div className="billing-empty">
+          No invoices yet. Create one from a work order or wait for the next repair to be billed.
+        </div>
+      ) : null}
+
+      <div className="billing-list">
         {invoices.map((invoice) => (
-          <div key={invoice._id} style={{ border: '1px solid #444', padding: 16, borderRadius: 8 }}>
+          <div key={invoice._id} className="billing-card">
             <strong>{invoice.invoiceNumber}</strong>
             <p>Status: {invoice.status}</p>
             <p>Total: ${invoice.total}</p>
-            <button onClick={() => setSelectedInvoice(invoice)}>View</button>
-            {invoice.status !== 'paid' ? (
-              <button onClick={() => { setSelectedInvoice(invoice); setShowPaymentModal(true); }} style={{ marginLeft: 8 }}>Pay</button>
-            ) : null}
+            <div className="billing-actions">
+              <button className="billing-btn-secondary" onClick={() => setSelectedInvoice(invoice)}>View</button>
+              {invoice.status !== 'paid' ? (
+                <button className="billing-btn" onClick={() => { setSelectedInvoice(invoice); setShowPaymentModal(true); }}>Pay</button>
+              ) : null}
+            </div>
           </div>
         ))}
       </div>
 
       {selectedInvoice ? (
-        <div style={{ marginTop: 24, display: 'grid', gap: 16 }}>
+        <div className="billing-section">
           <InvoiceViewer invoice={selectedInvoice} />
           {selectedInvoice.status === 'paid' ? <ReceiptViewer invoice={selectedInvoice} /> : null}
         </div>
