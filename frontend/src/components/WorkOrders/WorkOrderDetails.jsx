@@ -149,6 +149,8 @@ export default function WorkOrderDetails() {
     || appointment?.clientId?.email
     || "N/A";
   const acceptedDate = workOrder.acceptedAt ? new Date(workOrder.acceptedAt) : null;
+  const invoiceTotal = Number(workOrder?.invoice?.total ?? workOrder?.invoice?.laborTime * 100 ?? 0);
+  const invoiceEstimate = Number(workOrder?.invoice?.laborTime ?? laborHours ?? 0);
 
   return (
     <div className="wo-details-container">
@@ -217,6 +219,13 @@ export default function WorkOrderDetails() {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
+      </div>
+
+      <div className="wo-details-card">
+        <h3>Invoice Estimate</h3>
+        <p><strong>Labor Hours:</strong> {invoiceEstimate} hr</p>
+        <p><strong>Estimated Total:</strong> ${invoiceTotal.toFixed(2)}</p>
+        <p className="wo-notify-helper">This total updates when labor hours and parts are saved.</p>
       </div>
 
       {/* Status */}

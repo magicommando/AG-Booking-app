@@ -170,7 +170,8 @@ exports.login = async (req, res) => {
         phone: user.phone,
         location: user.location,
         billingAddress: user.billingAddress,
-        preferredContactMethod: user.preferredContactMethod
+        preferredContactMethod: user.preferredContactMethod,
+        laborRate: user.laborRate
       }
     });
   } catch (err) {

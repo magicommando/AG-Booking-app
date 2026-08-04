@@ -25,6 +25,9 @@ exports.updateUser = async (req, res) => {
     const normalizedFullName = typeof req.body.fullName === 'string' ? req.body.fullName.trim() : '';
     const requiredFields = ['email', 'phone', 'location', 'billingAddress', 'preferredContactMethod'];
     const updates = { ...req.body };
+    if (typeof updates.laborRate !== 'undefined') {
+      updates.laborRate = Number(updates.laborRate);
+    }
 
     if (req.user.userId !== id) {
       return res.status(403).json({ message: 'Forbidden: cannot update another user' });

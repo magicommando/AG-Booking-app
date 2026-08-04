@@ -14,6 +14,7 @@ export default function SettingsPage() {
     location: user?.location || "",
     billingAddress: user?.billingAddress || "",
     preferredContactMethod: user?.preferredContactMethod || "email",
+    laborRate: user?.laborRate || "",
     notifications: true
   });
 
@@ -32,7 +33,8 @@ export default function SettingsPage() {
           phone: form.phone,
           location: form.location,
           billingAddress: form.billingAddress,
-          preferredContactMethod: form.preferredContactMethod
+          preferredContactMethod: form.preferredContactMethod,
+          laborRate: form.laborRate
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -127,6 +129,17 @@ export default function SettingsPage() {
           <option value="phone">Phone</option>
           <option value="sms">SMS</option>
         </select>
+
+        {user?.role === "gunsmith" ? (
+          <input
+            type="number"
+            name="laborRate"
+            placeholder="Labor Rate ($/hr)"
+            value={form.laborRate}
+            onChange={handleChange}
+            min="0"
+          />
+        ) : null}
 
         <button className="settings-btn" onClick={updateProfile}>
           Save Profile

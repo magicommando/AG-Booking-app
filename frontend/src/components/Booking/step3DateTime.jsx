@@ -132,11 +132,15 @@ export default function Step3DateTime() {
           disabled={checkingAvailability || availableGunsmiths.length === 0}
         >
           <option value="">Select Gunsmith</option>
-          {availableGunsmiths.map((g) => (
-            <option key={g._id} value={g._id}>
-              {`${g.firstName || ""} ${g.lastName || ""}`.trim() || g.email}
-            </option>
-          ))}
+          {availableGunsmiths.map((g) => {
+            const name = `${g.firstName || ""} ${g.lastName || ""}`.trim() || g.email;
+            const rate = Number(g.laborRate || 0);
+            return (
+              <option key={g._id} value={g._id}>
+                {`${name}${rate > 0 ? ` — $${rate}/hr` : ""}`}
+              </option>
+            );
+          })}
         </select>
 
         {date && checkingAvailability ? <p className="booking-step-label">Checking available gunsmiths...</p> : null}

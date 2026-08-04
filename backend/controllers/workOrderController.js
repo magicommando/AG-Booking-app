@@ -1,6 +1,7 @@
 const WorkOrder = require('../models/WorkOrder');
 const Appointment = require('../models/Appointment');
 const Message = require('../models/Message');
+const Billing = require('../models/Billing');
 
 function formatUserName(user) {
   if (!user) return 'Client';
@@ -241,6 +242,42 @@ exports.completeWorkOrder = async (req, res) => {
       message: generatedMessage
     };
     await workOrder.save();
+
+    const laborHours = Number(workOrder.invoice?.laborTime ?? workOrder.estimatedTime ?? 0);
+    const partsCost = Number(workOrder.invoice?.partsCost ?? 0);
+    const total = Number(workOrder.invoice?.total ?? (laborHours * 100 + partsCost));
+
+    const existingInvoice = await Billing.findOne({ workOrderId: workOrder._id });
+    if (!existingInvoice) {
+      const invoiceNumber = `INV-${String((await Billing.countDocuments()) + 1).padStart(4, '0')}`;
+      await Billing.create({
+        invoiceNumber,
+        workOrderId: workOrder._id,
+        clientId: workOrder.clientId,
+        gunsmithId: workOrder.gunsmithId,
+        customerName: workOrder.clientName || appointment?.clientId?.fullName || appointment?.clientId?.name || 'Client',
+        items: [
+          {
+            type: 'labor',
+            description: 'Labor',
+            qty: laborHours || 1,
+            unitPrice: 100,
+            lineTotal: laborHours * 100
+          },
+          ...(partsCost > 0 ? [{
+            type: 'part',
+            description: 'Parts',
+            qty: 1,
+            unitPrice: partsCost,
+            lineTotal: partsCost
+          }] : [])
+        ],
+        subtotal: laborHours * 100 + partsCost,
+        tax: 0,
+        total,
+        status: 'draft'
+      });
+    }
 
     if (appointment?.clientId && (emailRequested || smsRequested)) {
       await Message.create({
