@@ -236,6 +236,15 @@ exports.completeWorkOrder = async (req, res) => {
     const generatedMessage = customMessage || buildCompletionMessage(appointment);
 
     workOrder.progress = 'completed';
+    workOrder.estimatedTime = laborHours;
+    workOrder.partsNeeded = Array.isArray(req.body?.partsNeeded) ? req.body.partsNeeded : workOrder.partsNeeded;
+    workOrder.notes = typeof req.body?.notes === 'string' ? req.body.notes : workOrder.notes;
+    workOrder.invoice = {
+      ...(workOrder.invoice || {}),
+      laborTime: laborHours,
+      partsCost,
+      total
+    };
     workOrder.completionNotification = {
       email: emailRequested,
       sms: smsRequested,
@@ -243,9 +252,9 @@ exports.completeWorkOrder = async (req, res) => {
     };
     await workOrder.save();
 
-    const laborHours = Number(workOrder.invoice?.laborTime ?? workOrder.estimatedTime ?? 0);
-    const partsCost = Number(workOrder.invoice?.partsCost ?? 0);
-    const total = Number(workOrder.invoice?.total ?? (laborHours * 100 + partsCost));
+    const laborHours = Number(req.body?.laborTime ?? workOrder.invoice?.laborTime ?? workOrder.estimatedTime ?? 0);
+    const partsCost = Number(req.body?.partsCost ?? workOrder.invoice?.partsCost ?? 0);
+    const total = Number(req.body?.total ?? workOrder.invoice?.total ?? (laborHours * 100 + partsCost));
 
     const existingInvoice = await Billing.findOne({ workOrderId: workOrder._id });
     if (!existingInvoice) {

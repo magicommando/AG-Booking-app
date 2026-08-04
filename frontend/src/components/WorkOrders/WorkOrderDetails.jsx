@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppState } from "../../state/AppState";
 import {
   completeWorkOrder,
@@ -11,6 +11,7 @@ import "./WorkOrderDetails.css";
 export default function WorkOrderDetails() {
   const { token } = useAppState();
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [workOrder, setWorkOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -119,7 +120,11 @@ export default function WorkOrderDetails() {
           email: notifyEmail,
           sms: notifySms,
           message: completionMessage
-        }
+        },
+        laborTime: laborHours,
+        partsNeeded,
+        notes,
+        progress: "completed"
       });
       if (response?.workOrder) {
         setWorkOrder(response.workOrder);
@@ -130,6 +135,7 @@ export default function WorkOrderDetails() {
 
       setProgress("completed");
       alert("Work order marked as completed");
+      navigate("/admin/workorders");
     } catch (err) {
       console.error("Error finalizing work order:", err);
     }
