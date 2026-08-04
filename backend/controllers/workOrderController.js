@@ -73,7 +73,9 @@ exports.createWorkOrder = async (req, res) => {
     }
 
     const isOwner = appointment.gunsmithId && String(appointment.gunsmithId) === String(req.user.userId);
-    if (!isOwner) {
+    const isAdminOrGunsmith = req.user.role === 'gunsmith' || req.user.role === 'admin';
+
+    if (!isOwner && !isAdminOrGunsmith) {
       return res.status(403).json({ message: 'Forbidden: appointment is not assigned to you' });
     }
 

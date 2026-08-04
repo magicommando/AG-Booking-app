@@ -6,7 +6,8 @@ import "./LandingPage.css";
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const { token } = useAppState();
+  const { token, user } = useAppState();
+  const isAdmin = user?.role === "gunsmith" || user?.role === "admin";
 
   const featuredServices = [
     {
@@ -59,7 +60,12 @@ export default function LandingPage() {
             <ServiceCard
               key={index}
               service={service}
-              onSelect={() => navigate("/booking/service")}
+              onSelect={() => {
+                if (isAdmin) {
+                  return;
+                }
+                navigate("/booking/service");
+              }}
             />
           ))}
         </div>

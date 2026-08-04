@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAppState } from "../../state/AppState";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 import { getConversations, sendConversationMessage } from "../../services/messageService";
 import "./MessageCenter.css";
 
@@ -57,7 +57,7 @@ export default function MessageCenter() {
           ? `/appointments/gunsmith/${currentUserId}`
           : `/appointments/client/${currentUserId}`;
 
-        const res = await axios.get(
+        const res = await api.get(
           endpoint,
           { headers: { Authorization: `Bearer ${token}` } }
         );
