@@ -3,8 +3,9 @@ import { useAppState } from "../state/AppState";
 
 export default function AdminRoute({ children }) {
   const { token, user } = useAppState();
+  const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
-  if (!token) {
+  if (!token && !storedToken) {
     return <Navigate to="/login" />;
   }
 

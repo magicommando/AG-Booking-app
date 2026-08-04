@@ -49,9 +49,12 @@ import SettingsPage from "./components/Settings/SettingsPage";
 
 function ProtectedRoute({ children }) {
   const { token } = useAppState();
-  if (!token) {
+  const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+  if (!token && !storedToken) {
     return <Navigate to="/login" replace />;
   }
+
   return children;
 }
 
