@@ -73,8 +73,8 @@ function toInventoryResponse(item) {
 
 function canAccessInventory(reqUser, item) {
   if (!reqUser || !item) return false;
-  if (reqUser.role === 'admin') return true;
-  return item.gunsmithId?.toString() === reqUser.userId;
+  if (reqUser.role === 'admin' || reqUser.role === 'gunsmith') return true;
+  return false;
 }
 
 // Add item (gunsmith/admin shared inventory)
@@ -99,7 +99,8 @@ exports.addItem = async (req, res) => {
 
 exports.getInventory = async (req, res) => {
   try {
-    const filter = req.user?.role === 'admin' ? {} : { gunsmithId: req.user.userId };
+    const isStaff = req.user?.role === 'admin' || req.user?.role === 'gunsmith';
+    const filter = isStaff ? {} : { gunsmithId: req.user.userId };
     const items = await Inventory.find(filter).sort({ createdAt: -1 });
     res.json(items.map(toInventoryResponse));
   } catch (err) {

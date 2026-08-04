@@ -145,7 +145,6 @@ export default function FirearmDetails({ firearm }) {
     activeFirearm.image
   ].filter((url, index, arr) => typeof url === "string" && url.trim() && arr.indexOf(url) === index);
   const clientId = activeFirearm.userId?._id || activeFirearm.userId || "-";
-  const notes = activeFirearm.notes;
   const caliber = activeFirearm.caliber || "-";
   const type = activeFirearm.type || "-";
 

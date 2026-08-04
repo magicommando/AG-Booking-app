@@ -50,20 +50,6 @@ export default function Login() {
     }
   }
 
-  async function handleForgotPassword(e) {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    try {
-      const res = await api.post('/auth/forgot-password', { email: resetEmail.trim() });
-      setSuccess(res.data?.message || 'Password reset token generated');
-      setResetMode(true);
-    } catch (err) {
-      setError(err.response?.data?.message || err.response?.data?.error || 'Could not request password reset');
-    }
-  }
-
   async function handleResetPassword(e) {
     e.preventDefault();
     setError("");
