@@ -6,13 +6,10 @@ import BookingProgress from "./BookingProgress";
 import "./Booking.css";
 
 export default function Step4Confirm() {
-  const { bookingService, bookingFirearm, bookingDateTime, token, user } = useAppState();
+  const { bookingService, bookingFirearm, bookingDateTime, token } = useAppState();
   const navigate = useNavigate();
   const serviceName = typeof bookingService === "string" ? bookingService : bookingService?.name;
-  const selectedGunsmith = user?.role === "gunsmith"
-    ? user
-    : null;
-  const estimatedInvoiceAmount = Number(selectedGunsmith?.laborRate || bookingDateTime?.gunsmithRate || 0);
+  const estimatedInvoiceAmount = Number(bookingDateTime?.gunsmithRate || 0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 

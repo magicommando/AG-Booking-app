@@ -105,6 +105,66 @@
   opacity: 0.78;
 }
 
+.admindash-labor-card {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(201, 168, 106, 0.42);
+  background: linear-gradient(135deg, rgba(22, 29, 31, 0.96), rgba(8, 15, 17, 0.94));
+  box-shadow: inset 0 0 12px rgba(0, 255, 255, 0.08), 0 0 18px rgba(201, 168, 106, 0.15);
+}
+
+.admindash-labor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.admindash-labor-pill {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(201, 168, 106, 0.16);
+  color: #f6db9c;
+}
+
+.admindash-labor-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.admindash-labor-input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 168, 106, 0.3);
+  background: rgba(10, 16, 18, 0.92);
+  color: #f7f3e8;
+}
+
+.admindash-labor-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(141, 247, 208, 0.35);
+  background: rgba(201, 168, 106, 0.2);
+  color: #fff1cf;
+  cursor: pointer;
+}
+
+.admindash-labor-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.admindash-labor-message {
+  margin-top: 10px;
+  color: #8cf3cd;
+  font-size: 0.9rem;
+}
+
 .admindash-rpg-box {
   width: 100%;
   min-height: 132px;

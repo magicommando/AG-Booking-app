@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useAppState } from "../../state/AppState";
+import { useAppState, useAppDispatch } from "../../state/AppState";
 import { Link } from "react-router-dom";
 import api from "../../services/api";
 import { fetchInventoryItems } from "../../services/inventoryService";
@@ -100,6 +100,7 @@ const DASHBOARD_CARDS = [
 
 export default function AdminDashboard() {
   const { user, token } = useAppState();
+  const dispatch = useAppDispatch();
   const [loadingSignals, setLoadingSignals] = useState(true);
   const [signalError, setSignalError] = useState("");
   const [lowStockItems, setLowStockItems] = useState([]);
@@ -108,9 +109,13 @@ export default function AdminDashboard() {
   const [activeLineIndex, setActiveLineIndex] = useState(0);
   const [bookingWindowHours, setBookingWindowHours] = useState(24);
   const [audioAlertsEnabled, setAudioAlertsEnabled] = useState(false);
+  const [laborRateInput, setLaborRateInput] = useState(user?.laborRate ?? "");
+  const [laborRateSaving, setLaborRateSaving] = useState(false);
+  const [laborRateMessage, setLaborRateMessage] = useState("");
   const previousCountsRef = useRef({ lowStock: 0, newBookings: 0, initialized: false });
 
   const userId = user?.id || user?._id;
+  const canManageLaborRate = user?.role === "gunsmith" || user?.role === "admin";
 
   useEffect(() => {
     async function loadSignals() {
@@ -170,6 +175,46 @@ export default function AdminDashboard() {
     const intervalId = setInterval(loadSignals, 60000);
     return () => clearInterval(intervalId);
   }, [bookingWindowHours, token, userId]);
+
+  useEffect(() => {
+    setLaborRateInput(user?.laborRate ?? "");
+  }, [user?.laborRate]);
+
+  async function saveLaborRate() {
+    if (!token || !user?.email) return;
+
+    const numericRate = Number(laborRateInput);
+    if (Number.isNaN(numericRate) || numericRate < 0) {
+      setLaborRateMessage("Enter a valid labor rate.");
+      return;
+    }
+
+    try {
+      setLaborRateSaving(true);
+      setLaborRateMessage("");
+
+      const response = await api.put("/users/profile",
+        {
+          email: user.email,
+          phone: user.phone || "",
+          location: user.location || "",
+          billingAddress: user.billingAddress || "",
+          preferredContactMethod: user.preferredContactMethod || "email",
+          laborRate: numericRate
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      dispatch({ type: "SET_USER", payload: response.data.user });
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      setLaborRateMessage(`Labor rate saved at $${numericRate}/hr.`);
+    } catch (err) {
+      console.error("Failed to save labor rate:", err);
+      setLaborRateMessage("Unable to save labor rate right now.");
+    } finally {
+      setLaborRateSaving(false);
+    }
+  }
 
   useEffect(() => {
     const previous = previousCountsRef.current;
@@ -314,6 +359,29 @@ export default function AdminDashboard() {
               Audio Alerts: {audioAlertsEnabled ? "On" : "Off"}
             </button>
           </div>
+
+          {canManageLaborRate ? (
+            <div className="admindash-labor-card">
+              <div className="admindash-labor-header">
+                <p className="admindash-rpg-speaker">LABOR RATE</p>
+                <span className="admindash-labor-pill">$ / hr</span>
+              </div>
+              <div className="admindash-labor-row">
+                <input
+                  type="number"
+                  min="0"
+                  className="admindash-labor-input"
+                  value={laborRateInput}
+                  onChange={(e) => setLaborRateInput(e.target.value)}
+                  placeholder="90"
+                />
+                <button type="button" className="admindash-labor-btn" onClick={saveLaborRate} disabled={laborRateSaving}>
+                  {laborRateSaving ? "Saving..." : "Save"}
+                </button>
+              </div>
+              {laborRateMessage ? <p className="admindash-labor-message">{laborRateMessage}</p> : null}
+            </div>
+          ) : null}
 
           <div className={`admindash-rpg-box severity-${activeDialogue.severity}`} role="status" aria-live="polite">
             <p className="admindash-rpg-speaker">ANALYZER AVATAR</p>

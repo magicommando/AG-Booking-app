@@ -111,9 +111,16 @@ export default function Step3DateTime() {
   function handleNext() {
     if (!gunsmithId || !date || !time) return alert("Select gunsmith, date, and time");
 
+    const selectedGunsmith = availableGunsmiths.find((g) => String(g._id) === String(gunsmithId));
+
     dispatch({
       type: "SET_BOOKING_DATETIME",
-      payload: { date, time, gunsmithId }
+      payload: {
+        date,
+        time,
+        gunsmithId,
+        gunsmithRate: Number(selectedGunsmith?.laborRate || 0)
+      }
     });
 
     navigate("/booking/confirm");
