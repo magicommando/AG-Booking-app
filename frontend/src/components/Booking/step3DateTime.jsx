@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useAppDispatch } from "../../state/AppState";
 import { useAppState } from "../../state/AppState";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 import BookingProgress from "./BookingProgress";
 import ClientSideTimeSelect from "./ClientSideTimeSelect";
 import AdminCalendar from "./AdminCalendar";
@@ -25,7 +25,7 @@ export default function Step3DateTime() {
   useEffect(() => {
     async function loadGunsmiths() {
       try {
-        const res = await axios.get("http://localhost:5000/api/users/role/gunsmiths");
+        const res = await api.get("/users/role/gunsmiths");
         const list = Array.isArray(res.data) ? res.data : [];
         setGunsmiths(list);
         setAvailableGunsmiths(list);
@@ -70,8 +70,8 @@ export default function Step3DateTime() {
         const checks = await Promise.all(
           gunsmiths.map(async (g) => {
             try {
-              const res = await axios.get(
-                `http://localhost:5000/api/schedule/${g._id}/${date}`,
+              const res = await api.get(
+                `/schedule/${g._id}/${date}`,
                 { headers: { Authorization: `Bearer ${token}` } }
               );
               const slots = Array.isArray(res.data) ? res.data : [];

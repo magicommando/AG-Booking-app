@@ -6,7 +6,7 @@ import { fetchInventoryItems } from "../../services/inventoryService";
 import FirearmCard from "../Firearms/FirearmCard";
 import AnalyzerAvatar from "../../Pages/analyzer/AnalyzerAvatar";
 import AnalyzerResults from "../../Pages/analyzer/AnalyzerResults";
-import axios from "axios";
+import api from "../../services/api";
 import "./AIAnalyzer.css";
 
 const AVATAR_TAGLINE = "ZUNI ARMS SYSTEM // AI ANALYSIS ONLINE";
@@ -26,7 +26,7 @@ export default function AIAnalyzer() {
   const [scannedItemCount, setScannedItemCount] = useState(0);
 
   const resolvedPhotoUrl = photoUrl
-    ? (photoUrl.startsWith("http") ? photoUrl : `http://localhost:5000${photoUrl}`)
+    ? (photoUrl.startsWith("http") ? photoUrl : `${window.location.origin}${photoUrl}`)
     : null;
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function AIAnalyzer() {
     async function loadFirearms() {
       setLoadingFirearms(true);
       try {
-        const res = await axios.get("http://localhost:5000/api/firearms", {
+        const res = await api.get("/firearms", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setFirearms(res.data || []);

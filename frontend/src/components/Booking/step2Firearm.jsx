@@ -2,7 +2,7 @@ import FirearmCard from "../Firearms/FirearmCard";
 import { useAppState, useAppDispatch } from "../../state/AppState";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 import BookingProgress from "./BookingProgress";
 import "./Booking.css";
 
@@ -16,7 +16,7 @@ export default function Step2Firearm() {
   useEffect(() => {
     async function loadFirearms() {
       try {
-        const res = await axios.get("http://localhost:5000/api/firearms", {
+        const res = await api.get("/firearms", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setFirearms(res.data || []);

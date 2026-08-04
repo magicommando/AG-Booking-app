@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAppState } from "../../state/AppState";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 import FirearmCard from "./FirearmCard";
 import "./AdminFirearmList.css";
 
@@ -17,7 +17,7 @@ export default function AdminFirearmList() {
   useEffect(() => {
     async function loadFirearms() {
       try {
-        const res = await axios.get("http://localhost:5000/api/firearms", {
+        const res = await api.get("/firearms", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setFirearms(res.data);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../services/api";
 import { useAppState } from "../../state/AppState";
 
 export default function ClientSideTimeSelect({ gunsmithId, day, selectedTime, onSelect }) {
@@ -18,8 +18,8 @@ export default function ClientSideTimeSelect({ gunsmithId, day, selectedTime, on
       try {
         setLoading(true);
         setError("");
-        const res = await axios.get(
-          `http://localhost:5000/api/schedule/${gunsmithId}/${day}`,
+        const res = await api.get(
+          `/schedule/${gunsmithId}/${day}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setSlots(Array.isArray(res.data) ? res.data : []);

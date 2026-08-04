@@ -54,8 +54,8 @@ export default function MessageCenter() {
       try {
         setLoadingContacts(true);
         const endpoint = role === "gunsmith"
-          ? `http://localhost:5000/api/appointments/gunsmith/${currentUserId}`
-          : `http://localhost:5000/api/appointments/client/${currentUserId}`;
+          ? `/appointments/gunsmith/${currentUserId}`
+          : `/appointments/client/${currentUserId}`;
 
         const res = await axios.get(
           endpoint,
