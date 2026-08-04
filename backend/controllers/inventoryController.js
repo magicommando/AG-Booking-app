@@ -71,7 +71,13 @@ function toInventoryResponse(item) {
   };
 }
 
-// Add item (gunsmith only)
+function canAccessInventory(reqUser, item) {
+  if (!reqUser || !item) return false;
+  if (reqUser.role === 'admin') return true;
+  return item.gunsmithId?.toString() === reqUser.userId;
+}
+
+// Add item (gunsmith/admin shared inventory)
 exports.addItem = async (req, res) => {
   try {
     const payload = toInventoryPayload(req.body);
@@ -93,7 +99,8 @@ exports.addItem = async (req, res) => {
 
 exports.getInventory = async (req, res) => {
   try {
-    const items = await Inventory.find({ gunsmithId: req.user.userId }).sort({ createdAt: -1 });
+    const filter = req.user?.role === 'admin' ? {} : { gunsmithId: req.user.userId };
+    const items = await Inventory.find(filter).sort({ createdAt: -1 });
     res.json(items.map(toInventoryResponse));
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -105,7 +112,7 @@ exports.getInventoryItem = async (req, res) => {
     const item = await Inventory.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
 
-    if (item.gunsmithId.toString() !== req.user.userId) {
+    if (!canAccessInventory(req.user, item)) {
       return res.status(403).json({ message: 'Forbidden: not your inventory item' });
     }
 
@@ -115,13 +122,13 @@ exports.getInventoryItem = async (req, res) => {
   }
 };
 
-// Update item (gunsmith only, own items + low-stock AI log)
+// Update item (shared inventory for admins, own items for gunsmiths + low-stock AI log)
 exports.updateItem = async (req, res) => {
   try {
     const item = await Inventory.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
 
-    if (item.gunsmithId.toString() !== req.user.userId) {
+    if (!canAccessInventory(req.user, item)) {
       return res.status(403).json({ message: 'Forbidden: not your inventory item' });
     }
 
@@ -147,13 +154,13 @@ exports.updateItem = async (req, res) => {
   }
 };
 
-// Delete item (gunsmith only, own items)
+// Delete item (shared inventory for admins, own items for gunsmiths)
 exports.deleteItem = async (req, res) => {
   try {
     const item = await Inventory.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
 
-    if (item.gunsmithId.toString() !== req.user.userId) {
+    if (!canAccessInventory(req.user, item)) {
       return res.status(403).json({ message: 'Forbidden: not your inventory item' });
     }
 
@@ -164,13 +171,13 @@ exports.deleteItem = async (req, res) => {
   }
 };
 
-// Place a parts order for an inventory item (gunsmith only, own items)
+// Place a parts order for an inventory item (shared inventory for admins, own items for gunsmiths)
 exports.placeOrder = async (req, res) => {
   try {
     const item = await Inventory.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
 
-    if (item.gunsmithId.toString() !== req.user.userId) {
+    if (!canAccessInventory(req.user, item)) {
       return res.status(403).json({ message: 'Forbidden: not your inventory item' });
     }
 

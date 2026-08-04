@@ -10,7 +10,7 @@ const inventoryController = require('../controllers/inventoryController');
 router.get(
   '/',
   auth,
-  allow(['gunsmith']),
+  allow(['gunsmith', 'admin']),
   inventoryController.getInventory
 );
 
@@ -18,7 +18,7 @@ router.get(
 router.get(
   '/:id',
   auth,
-  allow(['gunsmith']),
+  allow(['gunsmith', 'admin']),
   inventoryController.getInventoryItem
 );
 
@@ -26,7 +26,7 @@ router.get(
 router.post(
   '/',
   auth,
-  allow(['gunsmith']),
+  allow(['gunsmith', 'admin']),
   validate(inventorySchemas.create),
   inventoryController.addItem
 );
@@ -35,7 +35,7 @@ router.post(
 router.put(
   '/:id',
   auth,
-  allow(['gunsmith']),
+  allow(['gunsmith', 'admin']),
   validate(inventorySchemas.update),
   inventoryController.updateItem
 );
@@ -44,7 +44,7 @@ router.put(
 router.post(
   '/:id/orders',
   auth,
-  allow(['gunsmith']),
+  allow(['gunsmith', 'admin']),
   inventoryController.placeOrder
 );
 
@@ -52,7 +52,7 @@ router.post(
 router.delete(
   '/:id',
   auth,
-  allow(['gunsmith']),
+  allow(['gunsmith', 'admin']),
   inventoryController.deleteItem
 );
 
