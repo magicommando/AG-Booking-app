@@ -118,11 +118,19 @@ function buildHeuristicDiagnosis(inputText = '', media = null) {
   let barrelWear = 'Unknown';
   let roundCountEstimate = null;
   let recommendedService = 'General inspection and cleaning';
+  const partSet = new Set();
+  const issueSignals = [];
 
   const addFinding = ({ diagnosis, recommendation, part, warning, wear, service, hours = 1.0, rounds }) => {
     if (diagnosis) diagnostics.push(diagnosis);
     if (recommendation) recommendations.push(recommendation);
-    if (part) parts.push(part);
+    if (part) {
+      const uniquePart = String(part).trim();
+      if (uniquePart && !partSet.has(uniquePart.toLowerCase())) {
+        partSet.add(uniquePart.toLowerCase());
+        parts.push(uniquePart);
+      }
+    }
     if (warning) warnings.push(warning);
     if (wear) barrelWear = wear;
     if (service) recommendedService = service;
@@ -132,49 +140,71 @@ function buildHeuristicDiagnosis(inputText = '', media = null) {
     }
   };
 
-  if (text.includes('jam') || text.includes('stovepipe')) {
+  const addSignal = (signal) => {
+    if (signal && !issueSignals.includes(signal)) {
+      issueSignals.push(signal);
+    }
+  };
+
+  if (/(double feed|double-feed|feed issue|fails to feed|stuck round|round stuck|feeding problem|won't feed|won.t feed)/.test(text)) {
+    addSignal('double feed and feeding interruption');
     addFinding({
-      diagnosis: 'Possible failure to eject or feed.',
-      recommendation: 'Inspect extractor, clean chamber, and check magazine alignment.',
-      part: 'Extractor spring',
-      warning: 'Feeding and ejection issues can rapidly worsen under live fire.',
+      diagnosis: 'Double feed or feed interruption is likely occurring with the reported round-stacking or feeding issue.',
+      recommendation: 'Inspect the magazine lips, feed ramp, and chamber geometry; check for worn feed lips, a bent follower, or a damaged extractor that is allowing a second round to bind.',
+      part: 'Magazine and feed ramp',
+      warning: 'Feed problems can escalate quickly into a stoppage that affects reliability and safety.',
       wear: 'Medium',
-      service: 'Extractor service and chamber clean',
-      hours: 1.5,
-      rounds: 1200
+      service: 'Magazine and feed ramp inspection',
+      hours: 1.75,
+      rounds: 1400
     });
   }
 
-  if (text.includes('misfire') || text.includes('light strike')) {
+  if (/(extractor|eject|stovepipe|jam.*slide|slide.*jam|rough extractor|fails to extract|won.t eject|won.t extract)/.test(text)) {
+    addSignal('extractor and ejection issues');
     addFinding({
-      diagnosis: 'Possible firing pin or primer ignition issue.',
-      recommendation: 'Inspect the firing pin channel, clean the bolt, and verify ammunition quality.',
-      part: 'Firing pin',
-      warning: 'Ignition issues can cause unsafe cycling and unreliable performance.',
+      diagnosis: 'The reported extraction or ejection problem points to a worn or fouled extractor, chamber, or ejector path.',
+      recommendation: 'Clean the extractor channel and ejector path, inspect extractor tension, and verify the case is not being bound during extraction before replacing worn parts.',
+      part: 'Extractor and ejector',
+      warning: 'A rough extractor or partial ejection can cause repeated jams and misfires under load.',
+      wear: 'Medium',
+      service: 'Extractor and ejector service',
+      hours: 2.0,
+      rounds: 1600
+    });
+  }
+
+  if (/(misfire|light strike|fail.*fire|won.t fire|no ignition|primer issue)/.test(text)) {
+    addFinding({
+      diagnosis: 'Ignition failure is consistent with a firing pin, primer, or bolt issue described in the report.',
+      recommendation: 'Check the firing pin channel for debris, inspect the primer strike depth, and verify the bolt face and striker are not damaged or excessively worn.',
+      part: 'Firing pin and bolt face',
+      warning: 'Ignition issues can create unsafe cycling and unreliable performance.',
       wear: 'High',
       service: 'Firing pin inspection and bolt clean',
-      hours: 2.0,
+      hours: 2.25,
       rounds: 1800
     });
   }
 
-  if (text.includes('rust') || text.includes('corrosion')) {
+  if (/(rust|corrosion|pitting|oxidation|surface damage)/.test(text)) {
     addFinding({
-      diagnosis: 'Surface corrosion detected.',
-      recommendation: 'Perform rust removal and apply a protective coating to the affected surfaces.',
-      warning: 'Corrosion may accelerate wear if left untreated.',
+      diagnosis: 'Corrosion or surface wear is present and likely contributing to the reported function problem.',
+      recommendation: 'Remove rust from the affected surfaces, inspect the barrel and action for pitting, and apply a protective coating after cleaning and drying the firearm.',
+      part: 'Barrel and action surfaces',
+      warning: 'Corrosion can accelerate wear and increase the chance of binding or poor fit.',
       wear: 'Medium',
       service: 'Corrosion mitigation and protective oil treatment',
-      hours: 1.25,
+      hours: 1.5,
       rounds: 900
     });
   }
 
-  if (text.includes('accuracy') || text.includes('grouping') || text.includes('drift')) {
+  if (/(accuracy|grouping|drift|zero|scope|sight|alignment|poa|poi)/.test(text)) {
     addFinding({
-      diagnosis: 'Accuracy drift or group inconsistency may be present.',
-      recommendation: 'Check barrel crown, muzzle condition, and scope mount stability.',
-      part: 'Barrel crown',
+      diagnosis: 'The reported accuracy drift suggests barrel or mount alignment issues rather than an isolated ammo problem.',
+      recommendation: 'Inspect the barrel crown, muzzle condition, and scope or sight mount alignment; verify the firearm is not loose or torqued out of alignment before firing again.',
+      part: 'Barrel crown and mount',
       wear: 'Low',
       service: 'Barrel accuracy check and mount inspection',
       hours: 1.5,
@@ -182,11 +212,11 @@ function buildHeuristicDiagnosis(inputText = '', media = null) {
     });
   }
 
-  if (text.includes('chamber') && (text.includes('fouling') || text.includes('carbon'))) {
+  if (/(chamber.*(foul|carbon|dirty)|carbon.*build|powder.*buildup|dirty chamber|chamber fouling)/.test(text)) {
     addFinding({
-      diagnosis: 'Chamber fouling is likely affecting function.',
-      recommendation: 'Deep clean the chamber and verify headspace is still within acceptable limits.',
-      part: 'Chamber',
+      diagnosis: 'Chamber fouling or carbon buildup is likely reducing smooth cycling and extraction.',
+      recommendation: 'Deep clean the chamber and inspect the locking lugs and headspace to confirm there is no carbon buildup causing binding or drag.',
+      part: 'Chamber and locking lugs',
       wear: 'Low',
       service: 'Chamber cleaning and function check',
       hours: 1.25,
@@ -195,14 +225,18 @@ function buildHeuristicDiagnosis(inputText = '', media = null) {
   }
 
   if (diagnostics.length === 0) {
-    diagnostics.push('No specific issue detected from the provided description.');
-    recommendations.push('Perform a general inspection, visual clean, and function check.');
-    warnings.push('No obvious fault pattern was isolated from the input. A hands-on inspection is still recommended.');
+    diagnostics.push('No specific fault pattern was isolated from the issue description, so the firearm should be inspected broadly for wear and function drift.');
+    recommendations.push('Perform a general inspection, visual clean, and function check while watching for feed, extraction, and ignition anomalies.');
+    warnings.push('Because the issue description is vague, a hands-on inspection is still recommended before live use.');
     recommendedService = 'General inspection and cleaning';
   }
 
+  const detailSummary = issueSignals.length > 0
+    ? `The issue description most strongly suggests ${issueSignals.slice(0, 2).join(' and ')}. This is consistent with the observed malfunction pattern and should be checked before continued use.`
+    : diagnostics[0];
+
   return {
-    summary: diagnostics[0],
+    summary: detailSummary,
     diagnostics,
     recommendations,
     warnings,
