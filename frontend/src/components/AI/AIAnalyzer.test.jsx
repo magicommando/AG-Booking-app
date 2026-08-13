@@ -73,10 +73,10 @@ describe("AIAnalyzer formatting and visibility", () => {
     render(<AIAnalyzer />);
 
     expect(screen.getByText("AI Analyzer")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Upload Photo" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Upload Media" })).toBeTruthy();
     expect(screen.getByText("Select Firearm")).toBeTruthy();
     expect(screen.getByText("No firearm selected.")).toBeTruthy();
-    expect(screen.getByText("No photo uploaded.")).toBeTruthy();
+    expect(screen.getByText("No photo or video uploaded.")).toBeTruthy();
     expect(screen.getByPlaceholderText("Describe the firearm issue...")).toBeTruthy();
     expect(screen.getByText("Run AI Diagnostic")).toBeTruthy();
     expect(screen.getByTestId("analyzer-results").textContent).toBe("no-data");

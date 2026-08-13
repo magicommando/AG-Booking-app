@@ -7,13 +7,21 @@ const upload = require('../middleware/fileUpload');
 const { aiSchemas } = require('../validation/validationSchemas');
 const aiController = require('../controllers/aiController');
 
-// NEW: upload photo for AI analysis
+// Upload media for AI analysis (photos and videos)
+router.post(
+  '/media',
+  auth,
+  allow(['gunsmith', 'client']),
+  upload.single('media'),
+  aiController.uploadMedia
+);
+
 router.post(
   '/photo',
   auth,
   allow(['gunsmith', 'client']),
   upload.single('photo'),
-  aiController.uploadPhoto
+  aiController.uploadMedia
 );
 
 router.post('/firearm', auth, allow(['gunsmith', 'client']), validate(aiSchemas.analyzeFirearm), aiController.analyzeFirearm);

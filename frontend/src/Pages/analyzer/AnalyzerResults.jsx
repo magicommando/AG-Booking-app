@@ -21,11 +21,13 @@ export default function AnalyzerResults({ data }) {
   const summary = typeof data.summary === "string" && data.summary.trim()
     ? data.summary.trim()
     : diagnostics[0] || "Diagnostic summary unavailable.";
+  const sourceLabel = data?._source === "openai" ? "OpenAI vision AI" : data?._source === "openai-video" ? "OpenAI video AI" : "Heuristic fallback";
 
   return (
     <div className="analyzer-results">
       <h3>Diagnostic Report</h3>
 
+      <p><strong>Analysis Source:</strong> {sourceLabel}</p>
       {summary && <p><strong>Summary:</strong> {summary}</p>}
 
       <div className="analyzer-grid">

@@ -13,12 +13,14 @@ const AVATAR_TAGLINE = "ZUNI ARMS SYSTEM // AI ANALYSIS ONLINE";
 
 export default function AIAnalyzer() {
   const navigate = useNavigate();
-  const { token, role, aiResult, photoUrl, bookingFirearm, workOrderDraft } = useAppState();
+  const { token, role, aiResult, photoUrl, videoUrl, bookingFirearm, workOrderDraft } = useAppState();
   const dispatch = useAppDispatch();
   const [dialog, setDialog] = useState("Initializing diagnostics...");
   const [inputText, setInputText] = useState("");
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [loading, setLoading] = useState(false);
   const [firearms, setFirearms] = useState([]);
   const [loadingFirearms, setLoadingFirearms] = useState(true);
@@ -26,6 +28,9 @@ export default function AIAnalyzer() {
   const [scannedItemCount, setScannedItemCount] = useState(0);
 
   const resolvedPhotoUrl = photoUrl ? resolveAssetUrl(photoUrl) : null;
+  const resolvedVideoUrl = videoUrl ? resolveAssetUrl(videoUrl) : null;
+  const analysisSource = aiResult?._source || "heuristic";
+  const sourceBadge = analysisSource === "openai" ? "Vision AI active" : analysisSource === "openai-video" ? "Video AI active" : "Heuristic fallback";
 
   useEffect(() => {
     setDialog("Ready for tactical diagnostics.");
@@ -67,8 +72,8 @@ export default function AIAnalyzer() {
     }
 
     const trimmedInput = inputText.trim();
-    if (!trimmedInput && !photoUrl) {
-      setDialog("Describe the issue or upload a photo before running diagnostics.");
+    if (!trimmedInput && !photoUrl && !videoUrl) {
+      setDialog("Describe the issue or upload a photo or video before running diagnostics.");
       return;
     }
 
@@ -92,6 +97,14 @@ export default function AIAnalyzer() {
         payload.photoUrl = photoUrl;
       }
 
+      if (videoUrl) {
+        payload.videoUrl = videoUrl;
+      }
+
+      if (photoUrl || videoUrl) {
+        payload.mediaUrl = photoUrl || videoUrl;
+      }
+
       const res = await analyzeFirearm(token, payload);
       const nextResult = res?.diagnostics || res || {};
 
@@ -112,7 +125,7 @@ export default function AIAnalyzer() {
 
   async function handlePhotoUpload() {
     if (!token) {
-      setDialog("Please log in to upload photos.");
+      setDialog("Please log in to upload media.");
       return;
     }
 
@@ -126,16 +139,45 @@ export default function AIAnalyzer() {
 
     try {
       const formData = new FormData();
-      formData.append("photo", selectedPhoto);
+      formData.append("media", selectedPhoto);
 
       const res = await uploadPhoto(token, formData);
-      dispatch({ type: "SET_PHOTO_URL", payload: res.photoUrl });
-      setDialog("Photo uploaded successfully.");
+      dispatch({ type: "SET_PHOTO_URL", payload: res.photoUrl || res.mediaUrl });
+      setDialog(res.mediaType === 'video' ? "Video uploaded successfully." : "Photo uploaded successfully.");
     } catch (err) {
       console.error(err);
       setDialog("Photo upload failed.");
     } finally {
       setUploadingPhoto(false);
+    }
+  }
+
+  async function handleVideoUpload() {
+    if (!token) {
+      setDialog("Please log in to upload media.");
+      return;
+    }
+
+    if (!selectedVideo) {
+      setDialog("Choose a video before uploading.");
+      return;
+    }
+
+    setUploadingVideo(true);
+    setDialog("Uploading video for AI diagnostics...");
+
+    try {
+      const formData = new FormData();
+      formData.append("media", selectedVideo);
+
+      const res = await uploadPhoto(token, formData);
+      dispatch({ type: "SET_VIDEO_URL", payload: res.videoUrl || res.mediaUrl });
+      setDialog("Video uploaded successfully.");
+    } catch (err) {
+      console.error(err);
+      setDialog("Video upload failed.");
+    } finally {
+      setUploadingVideo(false);
     }
   }
 
@@ -243,10 +285,13 @@ export default function AIAnalyzer() {
     <div className="ai-container">
       <h2>AI Analyzer</h2>
       <AnalyzerAvatar statusText={AVATAR_TAGLINE} />
-      <p className="ai-status">{dialog}</p>
+      <div className="ai-status-row">
+        <p className="ai-status">{dialog}</p>
+        <span className={`ai-source-badge ai-source-${analysisSource}`}>{sourceBadge}</span>
+      </div>
 
       <div className="ai-card">
-        <h3>Upload Photo</h3>
+        <h3>Upload Media</h3>
         <div className="ai-inline-actions">
           <input
             type="file"
@@ -256,6 +301,17 @@ export default function AIAnalyzer() {
           />
           <button className="ai-btn" onClick={handlePhotoUpload} disabled={uploadingPhoto}>
             {uploadingPhoto ? "Uploading..." : "Upload Photo"}
+          </button>
+        </div>
+        <div className="ai-inline-actions ai-media-video-row">
+          <input
+            type="file"
+            accept="video/*"
+            className="ai-file-input"
+            onChange={(e) => setSelectedVideo(e.target.files?.[0] || null)}
+          />
+          <button className="ai-btn" onClick={handleVideoUpload} disabled={uploadingVideo}>
+            {uploadingVideo ? "Uploading..." : "Upload Video"}
           </button>
         </div>
       </div>
@@ -294,12 +350,24 @@ export default function AIAnalyzer() {
       </div>
 
       <div className="ai-card">
-        <h3>Photo</h3>
+        <h3>Media Evidence</h3>
         {resolvedPhotoUrl ? (
-          <img src={resolvedPhotoUrl} alt="Firearm" className="ai-photo" />
-        ) : (
-          <p>No photo uploaded.</p>
-        )}
+          <div>
+            <p>Photo uploaded.</p>
+            <img src={resolvedPhotoUrl} alt="Firearm" className="ai-photo" />
+          </div>
+        ) : null}
+
+        {resolvedVideoUrl ? (
+          <div>
+            <p>Video uploaded.</p>
+            <video src={resolvedVideoUrl} controls className="ai-video" />
+          </div>
+        ) : null}
+
+        {!resolvedPhotoUrl && !resolvedVideoUrl ? (
+          <p>No photo or video uploaded.</p>
+        ) : null}
       </div>
 
       <div className="ai-card">

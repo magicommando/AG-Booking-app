@@ -15,7 +15,14 @@ export async function scanInventory(token, payload) {
 }
 
 export async function uploadPhoto(token, payload) {
-  const response = await api.post("/ai/photo", payload, {
+  const response = await api.post("/ai/media", payload, {
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
+  });
+  return response.data;
+}
+
+export async function uploadMedia(token, payload) {
+  const response = await api.post("/ai/media", payload, {
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
   });
   return response.data;

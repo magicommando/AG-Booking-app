@@ -1,9 +1,115 @@
 // ai/aiEngine.js
 
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
-function buildHeuristicDiagnosis(inputText = '', photoUrl) {
+function getUploadRoot() {
+  return path.resolve(process.cwd(), 'uploads');
+}
+
+function resolveMediaReference(value) {
+  if (!value || typeof value !== 'string') return null;
+  if (/^https?:\/\//i.test(value) || value.startsWith('data:')) return value;
+
+  const normalized = value.startsWith('/') ? value : `/${value}`;
+  return `${process.env.APP_URL || process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`.replace(/\/$/, '')}${normalized}`;
+}
+
+function getLocalMediaPath(value) {
+  if (!value || typeof value !== 'string') return null;
+  if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('data:')) return null;
+
+  const cleanValue = value.startsWith('/') ? value.slice(1) : value;
+  const candidatePath = path.resolve(process.cwd(), cleanValue);
+  if (fs.existsSync(candidatePath)) return candidatePath;
+
+  const uploadPath = path.join(getUploadRoot(), cleanValue.replace(/^uploads\//i, ''));
+  if (fs.existsSync(uploadPath)) return uploadPath;
+
+  return null;
+}
+
+function readImageAsDataUrl(value) {
+  const localPath = getLocalMediaPath(value);
+  if (!localPath) return null;
+
+  try {
+    const fileBuffer = fs.readFileSync(localPath);
+    const ext = path.extname(localPath).toLowerCase();
+    const mimeType = {
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.webp': 'image/webp'
+    }[ext] || 'image/jpeg';
+
+    return `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
+  } catch (err) {
+    return null;
+  }
+}
+
+function buildVisionPrompt(text, mediaMeta, mode = 'photo') {
+  const finalText = [
+    'You are a gunsmithing diagnostic assistant. Diagnose the firearm issue carefully and return valid JSON with keys: summary, diagnostics, recommendations, warnings, parts, laborTime, barrelWear, roundCountEstimate, recommendedService.',
+    `Issue description: ${text || 'No issue description provided.'}`
+  ];
+
+  if (mode === 'video' && mediaMeta?.videoUrl) {
+    finalText.push(`Video evidence was uploaded for context: ${resolveMediaReference(mediaMeta.videoUrl) || mediaMeta.videoUrl}. Use it as a motion/operational clue: watch for repeated jams, bolt timing issues, extractor failure, cycling problems, and visible misalignment.`);
+  }
+
+  if (mediaMeta?.photoUrl) {
+    finalText.push('Inspect the uploaded image for wear, damage, chamber condition, extractor issues, corrosion, barrel condition, and obvious misalignment.');
+  }
+
+  if (mode === 'video' && !mediaMeta?.videoUrl && mediaMeta?.photoUrl) {
+    finalText.push('No video was supplied; treat this as the primary visual evidence and prioritize the still image when diagnosing.');
+  }
+
+  return finalText.join('\n');
+}
+
+function buildVisionContent(text, mediaMeta, mode = 'photo') {
+  const parts = [{ type: 'text', text: buildVisionPrompt(text, mediaMeta, mode) }];
+
+  if (mode !== 'video') {
+    const imageSources = [mediaMeta?.photoUrl, mediaMeta?.mediaUrl].filter(Boolean);
+
+    imageSources.forEach((value) => {
+      const dataUrl = readImageAsDataUrl(value) || resolveMediaReference(value);
+      if (dataUrl && /^data:image\//i.test(dataUrl)) {
+        parts.push({ type: 'image_url', image_url: { url: dataUrl } });
+      }
+    });
+  }
+
+  return parts;
+}
+
+function validateStructuredAiResult(result) {
+  if (!result || typeof result !== 'object') return false;
+
+  const diagnostics = Array.isArray(result.diagnostics)
+    ? result.diagnostics.filter((item) => typeof item === 'string' && item.trim())
+    : [];
+
+  const recommendations = Array.isArray(result.recommendations)
+    ? result.recommendations.filter((item) => typeof item === 'string' && item.trim())
+    : [];
+
+  if (!result.summary || typeof result.summary !== 'string' || !result.summary.trim()) return false;
+  if (diagnostics.length === 0 || recommendations.length === 0) return false;
+  if (result.laborTime !== undefined && !Number.isFinite(Number(result.laborTime))) return false;
+
+  return true;
+}
+
+function buildHeuristicDiagnosis(inputText = '', media = null) {
   const text = String(inputText || '').toLowerCase();
+  const mediaMeta = media && typeof media === 'object' ? media : { photoUrl: media, videoUrl: media, mediaUrl: media };
+  const mediaUrls = [mediaMeta.photoUrl, mediaMeta.videoUrl, mediaMeta.mediaUrl].filter(Boolean);
   const diagnostics = [];
   const recommendations = [];
   const warnings = [];
@@ -13,16 +119,7 @@ function buildHeuristicDiagnosis(inputText = '', photoUrl) {
   let roundCountEstimate = null;
   let recommendedService = 'General inspection and cleaning';
 
-  const addFinding = ({
-    diagnosis,
-    recommendation,
-    part,
-    warning,
-    wear,
-    service,
-    hours = 1.0,
-    rounds
-  }) => {
+  const addFinding = ({ diagnosis, recommendation, part, warning, wear, service, hours = 1.0, rounds }) => {
     if (diagnosis) diagnostics.push(diagnosis);
     if (recommendation) recommendations.push(recommendation);
     if (part) parts.push(part);
@@ -114,7 +211,11 @@ function buildHeuristicDiagnosis(inputText = '', photoUrl) {
     barrelWear,
     roundCountEstimate,
     recommendedService,
-    photoUrl
+    photoUrl: mediaMeta.photoUrl || undefined,
+    videoUrl: mediaMeta.videoUrl || undefined,
+    mediaUrl: mediaUrls[0] || undefined,
+    mediaUrls,
+    _source: 'heuristic'
   };
 }
 
@@ -166,30 +267,39 @@ function normalizeOpenAiResult(rawResult) {
     barrelWear: rawResult.barrelWear || 'Unknown',
     roundCountEstimate: Number.isFinite(Number(rawResult.roundCountEstimate)) ? Number(rawResult.roundCountEstimate) : null,
     recommendedService: rawResult.recommendedService || 'General inspection and cleaning',
-    photoUrl: rawResult.photoUrl || undefined
+    photoUrl: rawResult.photoUrl || undefined,
+    videoUrl: rawResult.videoUrl || undefined,
+    mediaUrl: rawResult.mediaUrl || rawResult.photoUrl || rawResult.videoUrl || undefined,
+    _source: rawResult._source || 'openai'
   };
 }
 
 module.exports = {
-  async analyzeFirearmIssue(inputText = '', photoUrl) {
+  async analyzeFirearmIssue(inputText = '', media = null) {
     const text = String(inputText || '').trim();
+    const mediaMeta = media && typeof media === 'object' ? media : { photoUrl: media, videoUrl: media, mediaUrl: media };
+    const mediaUrls = [mediaMeta.photoUrl, mediaMeta.videoUrl, mediaMeta.mediaUrl].filter(Boolean);
     const apiKey = process.env.OPENAI_API_KEY;
 
     if (apiKey) {
       try {
+        const primaryMode = mediaMeta?.videoUrl && !mediaMeta?.photoUrl ? 'video' : 'photo';
         const response = await axios.post(
           'https://api.openai.com/v1/chat/completions',
           {
             model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-            temperature: 0.3,
+            temperature: 0.2,
+            response_format: { type: 'json_object' },
             messages: [
               {
                 role: 'system',
-                content: 'You are a gunsmithing diagnostic assistant. Return valid JSON with keys: summary, diagnostics, recommendations, warnings, parts, laborTime, barrelWear, roundCountEstimate, recommendedService. Keep entries concise and firearm-safe.'
+                content: primaryMode === 'video'
+                  ? 'You are a gunsmithing diagnostic assistant specializing in video-based malfunction analysis. Return valid JSON with keys: summary, diagnostics, recommendations, warnings, parts, laborTime, barrelWear, roundCountEstimate, recommendedService. Keep entries concise and firearm-safe.'
+                  : 'You are a gunsmithing diagnostic assistant analyzing firearm media and description. Return valid JSON with keys: summary, diagnostics, recommendations, warnings, parts, laborTime, barrelWear, roundCountEstimate, recommendedService. Keep entries concise and firearm-safe.'
               },
               {
                 role: 'user',
-                content: `Analyze this firearm issue and provide a safe, practical diagnosis. Issue description: ${text || 'No issue description provided, but a photo may be available.'}`
+                content: buildVisionContent(text, mediaMeta, primaryMode)
               }
             ]
           },
@@ -204,20 +314,27 @@ module.exports = {
 
         const content = response?.data?.choices?.[0]?.message?.content;
         const parsed = extractJsonFromResponse(content);
-        const normalized = normalizeOpenAiResult(parsed || {});
 
-        if (normalized) {
-          return {
-            ...normalized,
-            photoUrl
-          };
+        if (parsed && validateStructuredAiResult(parsed)) {
+          const normalized = normalizeOpenAiResult({ ...parsed, _source: primaryMode === 'video' ? 'openai-video' : 'openai' });
+
+          if (normalized) {
+            return {
+              ...normalized,
+              photoUrl: mediaMeta.photoUrl || undefined,
+              videoUrl: mediaMeta.videoUrl || undefined,
+              mediaUrl: mediaUrls[0] || undefined,
+              mediaUrls,
+              _source: normalized._source || (primaryMode === 'video' ? 'openai-video' : 'openai')
+            };
+          }
         }
       } catch (err) {
         console.warn('OpenAI diagnosis unavailable, falling back to local firearm heuristics:', err.message);
       }
     }
 
-    return buildHeuristicDiagnosis(text, photoUrl);
+    return buildHeuristicDiagnosis(text, mediaMeta);
   },
 
   analyzeInventoryItem(item) {

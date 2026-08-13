@@ -23,6 +23,7 @@ const initialState = {
   role: getStoredUser()?.role || null,
   aiResult: null,
   photoUrl: null,
+  videoUrl: null,
   inventoryItems: [],
   workOrderDraft: null,
   bookingService: null,
@@ -52,6 +53,9 @@ function reducer(state, action) {
 
     case "SET_PHOTO_URL":
       return { ...state, photoUrl: action.payload };
+
+    case "SET_VIDEO_URL":
+      return { ...state, videoUrl: action.payload };
 
     case "SET_INVENTORY_ITEMS":
       return { ...state, inventoryItems: action.payload };

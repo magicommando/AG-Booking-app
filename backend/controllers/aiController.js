@@ -4,9 +4,13 @@ const mongoose = require('mongoose');
 // ai analysis controller functions
 exports.analyzeFirearm = async (req, res) => {
   try {
-    const { firearmId, inputText, photoUrl } = req.body;
+    const { firearmId, inputText, photoUrl, videoUrl, mediaUrl } = req.body;
 
-    const aiResult = await aiEngine.analyzeFirearmIssue(inputText, photoUrl);
+    const aiResult = await aiEngine.analyzeFirearmIssue(inputText, {
+      photoUrl,
+      videoUrl,
+      mediaUrl
+    });
 
     const safeFirearmId = mongoose.Types.ObjectId.isValid(firearmId)
       ? firearmId
@@ -16,7 +20,8 @@ exports.analyzeFirearm = async (req, res) => {
       userId: req.user.userId,
       firearmId: safeFirearmId,
       inputText,
-      photoUrl,
+      photoUrl: photoUrl || mediaUrl,
+      videoUrl: videoUrl || mediaUrl,
       aiResponse: JSON.stringify(aiResult)
     });
 
@@ -29,11 +34,32 @@ exports.analyzeFirearm = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-// upload photo for AI analysis (client only, own firearms)
+
+exports.uploadMedia = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No media file uploaded.' });
+    }
+
+    const fileUrl = `/uploads/${req.file.filename}`;
+    const mediaType = req.file.mimetype?.startsWith('video/') ? 'video' : 'image';
+
+    res.json({
+      message: 'AI media uploaded',
+      mediaUrl: fileUrl,
+      mediaType,
+      photoUrl: mediaType === 'image' ? fileUrl : undefined,
+      videoUrl: mediaType === 'video' ? fileUrl : undefined
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.uploadPhoto = async (req, res) => {
   try {
     const url = `/uploads/${req.file.filename}`;
-    res.json({ message: 'AI photo uploaded', photoUrl: url });
+    res.json({ message: 'AI photo uploaded', photoUrl: url, mediaUrl: url, mediaType: 'image' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

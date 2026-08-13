@@ -10,8 +10,11 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Allowed image types
-const allowedTypes = ['.jpg', '.jpeg', '.png', '.webp'];
+// Allowed media types for diagnostic uploads
+const allowedTypes = [
+  '.jpg', '.jpeg', '.png', '.webp',
+  '.mp4', '.mov', '.avi', '.m4v', '.webm', '.mkv'
+];
 
 // Storage configuration
 const storage = multer.diskStorage({
@@ -30,7 +33,7 @@ const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
 
   if (!allowedTypes.includes(ext)) {
-    return cb(new Error('Invalid file type. Only JPG, PNG, and WEBP images are allowed.'));
+    return cb(new Error('Invalid file type. Allowed media: JPG, PNG, WEBP, MP4, MOV, AVI, M4V, WEBM, MKV.'));
   }
 
   cb(null, true);
