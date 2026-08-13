@@ -60,12 +60,19 @@ app.use('/uploads', express.static(uploadsDir));
 
 app.get(['/uploads/:filename', '/uploads/grid/:filename'], async (req, res, next) => {
   try {
+    const requestedFilename = req.params.filename;
+    const localFilePath = path.join(uploadsDir, requestedFilename);
+
+    if (fs.existsSync(localFilePath)) {
+      return res.sendFile(localFilePath);
+    }
+
     if (!mongoose.connection?.db) {
-      return res.status(503).json({ message: 'Database not connected' });
+      return res.status(404).json({ message: 'File not found' });
     }
 
     const bucket = getGridFsBucket();
-    const file = await bucket.find({ filename: req.params.filename }).sort({ uploadDate: -1 }).limit(1).next();
+    const file = await bucket.find({ filename: requestedFilename }).sort({ uploadDate: -1 }).limit(1).next();
 
     if (!file) {
       return next();
@@ -76,7 +83,7 @@ app.get(['/uploads/:filename', '/uploads/grid/:filename'], async (req, res, next
     downloadStream.on('error', () => res.status(404).json({ message: 'File not found' }));
     downloadStream.pipe(res);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(404).json({ error: 'File not found' });
   }
 });
 
