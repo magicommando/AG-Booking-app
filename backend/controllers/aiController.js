@@ -1,6 +1,8 @@
 const AILog = require('../models/AILog');
+const MediaAsset = require('../models/MediaAsset');
 const aiEngine = require('../ai/aiEngine');
 const mongoose = require('mongoose');
+const { storeFileInGridFs } = require('../config/gridfs');
 // ai analysis controller functions
 exports.analyzeFirearm = async (req, res) => {
   try {
@@ -41,15 +43,33 @@ exports.uploadMedia = async (req, res) => {
       return res.status(400).json({ message: 'No media file uploaded.' });
     }
 
-    const fileUrl = `/uploads/${req.file.filename}`;
     const mediaType = req.file.mimetype?.startsWith('video/') ? 'video' : 'image';
+    const storageResult = await storeFileInGridFs(req.file, { userId: req.user?.userId, mediaType });
+    const fileUrl = `/uploads/grid/${storageResult.filename}`;
+
+    const userId = req.user?.userId && mongoose.Types.ObjectId.isValid(req.user.userId)
+      ? new mongoose.Types.ObjectId(req.user.userId)
+      : undefined;
+
+    const savedAsset = await MediaAsset.create({
+      userId,
+      url: fileUrl,
+      fileName: storageResult.filename,
+      originalName: req.file.originalname,
+      type: mediaType,
+      contentType: req.file.mimetype,
+      size: req.file.size,
+      fileId: storageResult.fileId
+    });
 
     res.json({
       message: 'AI media uploaded',
       mediaUrl: fileUrl,
       mediaType,
       photoUrl: mediaType === 'image' ? fileUrl : undefined,
-      videoUrl: mediaType === 'video' ? fileUrl : undefined
+      videoUrl: mediaType === 'video' ? fileUrl : undefined,
+      assetId: savedAsset._id,
+      fileId: storageResult.fileId
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -58,8 +78,18 @@ exports.uploadMedia = async (req, res) => {
 
 exports.uploadPhoto = async (req, res) => {
   try {
-    const url = `/uploads/${req.file.filename}`;
-    res.json({ message: 'AI photo uploaded', photoUrl: url, mediaUrl: url, mediaType: 'image' });
+    const storageResult = await storeFileInGridFs(req.file, {
+      userId: req.user?.userId,
+      mediaType: 'image'
+    });
+
+    res.json({
+      message: 'AI photo uploaded',
+      photoUrl: storageResult.url,
+      mediaUrl: storageResult.url,
+      mediaType: 'image',
+      fileId: storageResult.fileId
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

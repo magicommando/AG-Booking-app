@@ -17,17 +17,27 @@ const getStoredUser = () => {
   }
 };
 
+const getStoredMediaState = () => {
+  if (typeof window === 'undefined') return {};
+
+  try {
+    return JSON.parse(localStorage.getItem('appStateMedia') || '{}');
+  } catch {
+    return {};
+  }
+};
+
 const initialState = {
   token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
   user: getStoredUser(),
   role: getStoredUser()?.role || null,
-  aiResult: null,
-  photoUrl: null,
-  videoUrl: null,
+  aiResult: getStoredMediaState().aiResult || null,
+  photoUrl: getStoredMediaState().photoUrl || null,
+  videoUrl: getStoredMediaState().videoUrl || null,
   inventoryItems: [],
-  workOrderDraft: null,
+  workOrderDraft: getStoredMediaState().workOrderDraft || null,
   bookingService: null,
-  bookingFirearm: null,
+  bookingFirearm: getStoredMediaState().bookingFirearm || null,
   bookingDateTime: null,
   loading: false,
   error: null
@@ -85,6 +95,20 @@ function reducer(state, action) {
 
 export function AppStateProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const snapshot = {
+      aiResult: state.aiResult,
+      photoUrl: state.photoUrl,
+      videoUrl: state.videoUrl,
+      workOrderDraft: state.workOrderDraft,
+      bookingFirearm: state.bookingFirearm
+    };
+
+    localStorage.setItem('appStateMedia', JSON.stringify(snapshot));
+  }, [state.aiResult, state.photoUrl, state.videoUrl, state.workOrderDraft, state.bookingFirearm]);
 
   function loginUser(data) {
     if (typeof window !== 'undefined') {

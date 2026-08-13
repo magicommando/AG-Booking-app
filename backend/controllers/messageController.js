@@ -1,4 +1,5 @@
 const Message = require('../models/Message');
+const { storeFileInGridFs } = require('../config/gridfs');
 
 exports.listConversations = async (req, res) => {
   try {
@@ -94,8 +95,12 @@ exports.sendMessage = async (req, res) => {
 // uploadAttachment is now handled in a separate route, and the URL is returned to the client. The client can then include this URL in the attachments array when sending a message.
 exports.uploadAttachment = async (req, res) => {
   try {
-    const fileUrl = `/uploads/${req.file.filename}`;
-    res.json({ message: 'Attachment uploaded', url: fileUrl });
+    const storageResult = await storeFileInGridFs(req.file, {
+      userId: req.user?.userId,
+      mediaType: req.file?.mimetype?.startsWith('video/') ? 'video' : 'image'
+    });
+
+    res.json({ message: 'Attachment uploaded', url: storageResult.url, mediaUrl: storageResult.url });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

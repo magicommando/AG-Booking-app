@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const { getGridFsBucket } = require('./backend/config/gridfs');
 
 // load environment variables from .env files in both the root and backend directories
 const envPaths = [
@@ -56,6 +57,28 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use('/uploads', express.static(uploadsDir));
+
+app.get('/uploads/grid/:filename', async (req, res) => {
+  try {
+    if (!mongoose.connection?.db) {
+      return res.status(503).json({ message: 'Database not connected' });
+    }
+
+    const bucket = getGridFsBucket();
+    const file = await bucket.find({ filename: req.params.filename }).sort({ uploadDate: -1 }).limit(1).next();
+
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    const downloadStream = bucket.openDownloadStream(file._id);
+    res.set('Content-Type', file.contentType || 'application/octet-stream');
+    downloadStream.on('error', () => res.status(404).json({ message: 'File not found' }));
+    downloadStream.pipe(res);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 if (fs.existsSync(frontendBuildPath)) {
   app.use(express.static(frontendBuildPath));

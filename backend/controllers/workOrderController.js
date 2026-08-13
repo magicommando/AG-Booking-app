@@ -2,6 +2,7 @@ const WorkOrder = require('../models/WorkOrder');
 const Appointment = require('../models/Appointment');
 const Message = require('../models/Message');
 const Billing = require('../models/Billing');
+const { storeFileInGridFs } = require('../config/gridfs');
 
 function formatUserName(user) {
   if (!user) return 'Client';
@@ -157,10 +158,14 @@ exports.uploadPhoto = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden: not your work order' });
     }
 
-    workOrder.photoUrl = `/uploads/${req.file.filename}`;
+    const storageResult = await storeFileInGridFs(req.file, {
+      userId: req.user?.userId,
+      mediaType: 'image'
+    });
+    workOrder.photoUrl = storageResult.url;
     await workOrder.save();
 
-    res.json({ message: 'Work order photo uploaded', workOrder });
+    res.json({ message: 'Work order photo uploaded', photoUrl: storageResult.url, mediaUrl: storageResult.url, workOrder });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

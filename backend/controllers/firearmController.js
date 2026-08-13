@@ -1,4 +1,5 @@
 const Firearm = require('../models/Firearm');
+const { storeFileInGridFs } = require('../config/gridfs');
 
 function normalizeFirearmPayload(body = {}) {
   const {
@@ -71,12 +72,17 @@ exports.uploadPhoto = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden: not your firearm' });
     }
 
-    const uploadedUrl = `/uploads/${req.file.filename}`;
+    const storageResult = await storeFileInGridFs(req.file, {
+      userId: req.user?.userId,
+      mediaType: 'image'
+    });
+    const uploadedUrl = storageResult.url;
+
     firearm.photos = Array.isArray(firearm.photos) ? firearm.photos : [];
     firearm.photos.push(uploadedUrl);
     await firearm.save();
 
-    res.json({ message: 'Photo uploaded', photoUrl: uploadedUrl, firearm });
+    res.json({ message: 'Photo uploaded', photoUrl: uploadedUrl, mediaUrl: uploadedUrl, firearm });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
