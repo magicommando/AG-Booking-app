@@ -2,7 +2,7 @@ const AILog = require('../models/AILog');
 const MediaAsset = require('../models/MediaAsset');
 const aiEngine = require('../ai/aiEngine');
 const mongoose = require('mongoose');
-const { storeFileInGridFs } = require('../config/gridfs');
+const { storeFileInGridFs, deleteFileByName } = require('../config/gridfs');
 // ai analysis controller functions
 exports.analyzeFirearm = async (req, res) => {
   try {
@@ -89,6 +89,32 @@ exports.uploadPhoto = async (req, res) => {
       mediaUrl: storageResult.url,
       mediaType: 'image',
       fileId: storageResult.fileId
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.deleteMedia = async (req, res) => {
+  try {
+    const incomingUrl = typeof req.body?.url === 'string' ? req.body.url : req.query?.url;
+    if (!incomingUrl) {
+      return res.status(400).json({ message: 'Media URL is required' });
+    }
+
+    const filename = incomingUrl.split('/').pop();
+    if (!filename) {
+      return res.status(400).json({ message: 'Unable to determine media filename' });
+    }
+
+    const deletedFromGrid = await deleteFileByName(filename);
+    await MediaAsset.deleteMany({ fileName: filename, userId: req.user?.userId });
+
+    res.json({
+      message: 'Media deleted',
+      deleted: deletedFromGrid || true,
+      fileName: filename,
+      url: incomingUrl
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

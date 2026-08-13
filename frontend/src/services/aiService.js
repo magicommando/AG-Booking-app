@@ -28,6 +28,14 @@ export async function uploadMedia(token, payload) {
   return response.data;
 }
 
+export async function deleteMedia(token, url) {
+  const response = await api.delete('/ai/media', {
+    headers: { Authorization: `Bearer ${token}` },
+    data: { url }
+  });
+  return response.data;
+}
+
 export async function autoFillWorkOrder(token, payload) {
   const response = await api.post("/ai/work-order", payload, {
     headers: { Authorization: `Bearer ${token}` }

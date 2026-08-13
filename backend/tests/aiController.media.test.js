@@ -1,15 +1,17 @@
 const aiController = require('../controllers/aiController');
 const firearmController = require('../controllers/firearmController');
 const MediaAsset = require('../models/MediaAsset');
-const { storeFileInGridFs } = require('../config/gridfs');
+const { storeFileInGridFs, deleteFileByName } = require('../config/gridfs');
 const Firearm = require('../models/Firearm');
 
 jest.mock('../models/MediaAsset', () => ({
-  create: jest.fn()
+  create: jest.fn(),
+  deleteMany: jest.fn()
 }));
 
 jest.mock('../config/gridfs', () => ({
-  storeFileInGridFs: jest.fn()
+  storeFileInGridFs: jest.fn(),
+  deleteFileByName: jest.fn()
 }));
 
 jest.mock('../models/Firearm', () => ({
@@ -101,6 +103,32 @@ describe('aiController.uploadMedia', () => {
     expect(storeFileInGridFs).toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
       photoUrl: '/uploads/grid/firearm.png'
+    }));
+  });
+
+  it('deletes uploaded media files from GridFS when a user removes an upload', async () => {
+    const req = {
+      user: { userId: '507f1f77bcf86cd799439011' },
+      body: { url: '/uploads/grid/firearm.png' }
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+
+    deleteFileByName.mockResolvedValue(true);
+    MediaAsset.deleteMany.mockResolvedValue({ deletedCount: 1 });
+
+    await aiController.deleteMedia(req, res);
+
+    expect(deleteFileByName).toHaveBeenCalledWith('firearm.png');
+    expect(MediaAsset.deleteMany).toHaveBeenCalledWith(expect.objectContaining({
+      fileName: 'firearm.png'
+    }));
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      deleted: true,
+      fileName: 'firearm.png'
     }));
   });
 });

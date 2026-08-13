@@ -42,8 +42,30 @@ async function getFileByName(filename, bucketName = 'uploads') {
   return cursor.next();
 }
 
+async function deleteFileByName(filename, bucketName = 'uploads') {
+  const bucket = getGridFsBucket(bucketName);
+  const file = await getFileByName(filename, bucketName);
+
+  if (!file) {
+    return false;
+  }
+
+  await new Promise((resolve, reject) => {
+    bucket.delete(file._id, (error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve();
+    });
+  });
+
+  return true;
+}
+
 module.exports = {
   getGridFsBucket,
   storeFileInGridFs,
-  getFileByName
+  getFileByName,
+  deleteFileByName
 };

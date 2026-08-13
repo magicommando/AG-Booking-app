@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppState } from "../../state/AppState";
 import api, { resolveAssetUrl } from "../../services/api";
-import { uploadPhoto as uploadAiPhoto } from "../../services/aiService";
+import { uploadPhoto as uploadAiPhoto, deleteMedia } from "../../services/aiService";
 import "./FirearmDetails.css";
 
 export default function FirearmDetails({ firearm }) {
@@ -89,6 +89,23 @@ export default function FirearmDetails({ firearm }) {
     }
   }
 
+  async function handleRemovePhoto(urlToRemove) {
+    if (!urlToRemove || !activeToken) return;
+
+    try {
+      await deleteMedia(activeToken, urlToRemove);
+
+      const updatedPhotos = normalizedPhotos.filter((url) => url !== urlToRemove);
+      setLoadedFirearm((prev) => prev ? { ...prev, photos: updatedPhotos } : prev);
+      dispatch({ type: "SET_PHOTO_URL", payload: updatedPhotos[0] || null });
+      setUploadSuccess("Photo removed.");
+      setUploadError("");
+    } catch (err) {
+      console.error(err);
+      setUploadError(err.response?.data?.message || err.response?.data?.error || "Failed to remove photo.");
+    }
+  }
+
   async function handleNotesSave() {
     if (!activeFirearm?._id || !activeToken) {
       return;
@@ -167,15 +184,30 @@ export default function FirearmDetails({ firearm }) {
                 {photoUrls.length > 1 && (
                   <div className="firearm-details-thumb-grid">
                     {photoUrls.slice(1).map((url, idx) => (
-                      <img
-                        key={`${url}-${idx}`}
-                        src={url}
-                        alt={`${make} ${model} view ${idx + 2}`}
-                        className="firearm-details-thumb"
-                      />
+                      <div key={`${url}-${idx}`} className="firearm-details-thumb-wrap">
+                        <img
+                          src={url}
+                          alt={`${make} ${model} view ${idx + 2}`}
+                          className="firearm-details-thumb"
+                        />
+                        <button
+                          type="button"
+                          className="firearm-details-remove-btn"
+                          onClick={() => handleRemovePhoto(normalizedPhotos[idx + 1])}
+                        >
+                          Remove Photo
+                        </button>
+                      </div>
                     ))}
                   </div>
                 )}
+                <button
+                  type="button"
+                  className="firearm-details-remove-btn firearm-details-remove-primary"
+                  onClick={() => handleRemovePhoto(normalizedPhotos[0])}
+                >
+                  Remove Photo
+                </button>
               </>
             ) : (
               <div className="firearm-details-no-photo">No uploaded photos for this firearm.</div>

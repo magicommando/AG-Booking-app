@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppState, useAppDispatch } from "../../state/AppState";
-import { analyzeFirearm, scanInventory, uploadPhoto, autoFillWorkOrder as autoFillWorkOrderService } from "../../services/aiService";
+import { analyzeFirearm, scanInventory, uploadPhoto, deleteMedia, autoFillWorkOrder as autoFillWorkOrderService } from "../../services/aiService";
 import { fetchInventoryItems } from "../../services/inventoryService";
 import FirearmCard from "../Firearms/FirearmCard";
 import AnalyzerAvatar from "../../Pages/analyzer/AnalyzerAvatar";
@@ -181,6 +181,27 @@ export default function AIAnalyzer() {
     }
   }
 
+  async function handleRemoveMedia(type) {
+    const mediaUrl = type === 'photo' ? photoUrl : videoUrl;
+    if (!mediaUrl || !token) {
+      return;
+    }
+
+    try {
+      await deleteMedia(token, mediaUrl);
+      if (type === 'photo') {
+        dispatch({ type: 'SET_PHOTO_URL', payload: null });
+      } else {
+        dispatch({ type: 'SET_VIDEO_URL', payload: null });
+      }
+
+      setDialog(type === 'photo' ? 'Photo removed.' : 'Video removed.');
+    } catch (err) {
+      console.error(err);
+      setDialog(type === 'photo' ? 'Photo removal failed.' : 'Video removal failed.');
+    }
+  }
+
   async function runInventoryScan() {
     if (!token) {
       setDialog("Please log in to scan inventory.");
@@ -355,6 +376,9 @@ export default function AIAnalyzer() {
           <div>
             <p>Photo uploaded.</p>
             <img src={resolvedPhotoUrl} alt="Firearm" className="ai-photo" />
+            <button className="ai-btn ai-btn-secondary" type="button" onClick={() => handleRemoveMedia('photo')}>
+              Remove Photo
+            </button>
           </div>
         ) : null}
 
@@ -362,6 +386,9 @@ export default function AIAnalyzer() {
           <div>
             <p>Video uploaded.</p>
             <video src={resolvedVideoUrl} controls className="ai-video" />
+            <button className="ai-btn ai-btn-secondary" type="button" onClick={() => handleRemoveMedia('video')}>
+              Remove Video
+            </button>
           </div>
         ) : null}
 

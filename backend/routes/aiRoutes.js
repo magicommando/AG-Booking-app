@@ -29,6 +29,7 @@ router.post('/firearm', auth, allow(['gunsmith', 'client']), validate(aiSchemas.
 router.post('/inventory-scan', auth, allow(['gunsmith']), validate(aiSchemas.inventoryScan), aiController.scanInventory);
 
 router.post('/work-order', auth, allow(['gunsmith']), aiController.autoFillWorkOrder);
+router.delete('/media', auth, allow(['gunsmith', 'client']), aiController.deleteMedia);
 
 router.post('/', auth, allow(['client', 'gunsmith']), validate(aiSchemas.saveAnalysis), aiController.saveAIAnalysis);
 
