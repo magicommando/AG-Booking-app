@@ -58,7 +58,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/uploads', express.static(uploadsDir));
 
-app.get('/uploads/grid/:filename', async (req, res) => {
+app.get(['/uploads/:filename', '/uploads/grid/:filename'], async (req, res, next) => {
   try {
     if (!mongoose.connection?.db) {
       return res.status(503).json({ message: 'Database not connected' });
@@ -68,7 +68,7 @@ app.get('/uploads/grid/:filename', async (req, res) => {
     const file = await bucket.find({ filename: req.params.filename }).sort({ uploadDate: -1 }).limit(1).next();
 
     if (!file) {
-      return res.status(404).json({ message: 'File not found' });
+      return next();
     }
 
     const downloadStream = bucket.openDownloadStream(file._id);

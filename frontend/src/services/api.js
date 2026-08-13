@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 const getApiOrigin = () => {
-  const configured = process.env.REACT_APP_API_URL;
+  const configured = process.env.REACT_APP_API_URL || process.env.REACT_APP_BACKEND_URL || process.env.BACKEND_URL;
   if (configured) {
-    return configured.replace(/\/api$/, '');
+    return configured.replace(/\/api$/, '').replace(/\/$/, '');
   }
 
   if (typeof window !== 'undefined') {
     const currentOrigin = window.location.origin;
-    const isLocalOrigin = /^(http:\/\/localhost|http:\/\/127\.0\.0\.1)/i.test(currentOrigin);
+    const isLocalOrigin = /^(http:\/\/localhost|http:\/\/127\.0\.0\.1|http:\/\/0\.0\.0\.0)/i.test(currentOrigin);
     if (currentOrigin && !isLocalOrigin) {
       return currentOrigin;
     }
