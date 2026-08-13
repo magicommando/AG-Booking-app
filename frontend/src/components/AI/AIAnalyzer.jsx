@@ -93,9 +93,10 @@ export default function AIAnalyzer() {
       }
 
       const res = await analyzeFirearm(token, payload);
+      const nextResult = res?.diagnostics || res || {};
 
-      dispatch({ type: "SET_AI_RESULT", payload: res.diagnostics });
-      setDialog("Analysis complete.");
+      dispatch({ type: "SET_AI_RESULT", payload: nextResult });
+      setDialog(nextResult?.summary || nextResult?.diagnostics?.[0] || "Analysis complete.");
     } catch (err) {
       console.error(err);
       const apiMessage =

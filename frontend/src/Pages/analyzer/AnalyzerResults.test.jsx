@@ -40,4 +40,27 @@ describe("AnalyzerResults formatting", () => {
 
     expect(jsonBlock).toBeTruthy();
   });
+
+  it("renders array-based AI diagnostics and recommendations without losing detail", () => {
+    const payload = {
+      diagnostics: [
+        "Possible failure to eject or feed.",
+        "Chamber may have visible fouling."
+      ],
+      recommendations: [
+        "Inspect extractor and clean chamber.",
+        "Verify magazine alignment before testing."
+      ],
+      warnings: ["Extractor spring may be worn."],
+      barrelWear: "Medium",
+      recommendedService: "Extractor service and chamber clean"
+    };
+
+    render(<AnalyzerResults data={payload} />);
+
+    expect(screen.getAllByText("Possible failure to eject or feed.").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Inspect extractor and clean chamber.").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Extractor spring may be worn.").length).toBeGreaterThan(0);
+    expect(screen.getByText(/Barrel Wear:/)).toBeTruthy();
+  });
 });

@@ -6,7 +6,7 @@ exports.analyzeFirearm = async (req, res) => {
   try {
     const { firearmId, inputText, photoUrl } = req.body;
 
-    const aiResult = aiEngine.analyzeFirearmIssue(inputText, photoUrl);
+    const aiResult = await aiEngine.analyzeFirearmIssue(inputText, photoUrl);
 
     const safeFirearmId = mongoose.Types.ObjectId.isValid(firearmId)
       ? firearmId

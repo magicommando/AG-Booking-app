@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import AIAnalyzer from "./AIAnalyzer";
-import axios from "axios";
+import api from "../../services/api";
 
 const mockNavigate = jest.fn();
 const mockDispatch = jest.fn();
@@ -45,13 +45,20 @@ jest.mock("../../Pages/analyzer/AnalyzerResults", () => {
   };
 });
 
-jest.mock("axios");
+jest.mock("../../services/api", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn()
+  },
+  resolveAssetUrl: (url) => url
+}));
 
 describe("AIAnalyzer formatting and visibility", () => {
   beforeEach(() => {
     mockNavigate.mockClear();
     mockDispatch.mockClear();
-    axios.get.mockResolvedValue({ data: [] });
+    api.get.mockResolvedValue({ data: [] });
     mockAppState = {
       token: null,
       role: "client",
@@ -95,7 +102,7 @@ describe("AIAnalyzer formatting and visibility", () => {
     render(<AIAnalyzer />);
 
     await waitFor(() => {
-      expect(axios.get).toHaveBeenCalled();
+      expect(api.get).toHaveBeenCalled();
     });
 
     expect(screen.getByText("AI WorkOrder Auto‑Assist")).toBeTruthy();
