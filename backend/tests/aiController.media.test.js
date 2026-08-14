@@ -159,4 +159,50 @@ describe('aiController.uploadMedia', () => {
       mongoose.connection.db = originalDb;
     }
   });
+
+  it('uses a public object storage URL when R2/S3 is configured', async () => {
+    const originalPublicBase = process.env.PUBLIC_BASE_URL;
+    const originalR2Bucket = process.env.R2_BUCKET;
+    const originalR2PublicUrl = process.env.R2_PUBLIC_URL;
+    const originalAccessKey = process.env.R2_ACCESS_KEY_ID;
+    const originalSecretKey = process.env.R2_SECRET_ACCESS_KEY;
+    const originalAccountId = process.env.R2_ACCOUNT_ID;
+
+    process.env.PUBLIC_BASE_URL = 'https://cdn.example.com';
+    process.env.R2_BUCKET = 'gunshop-assets';
+    process.env.R2_PUBLIC_URL = 'https://cdn.example.com';
+    process.env.R2_ACCESS_KEY_ID = 'test-access';
+    process.env.R2_SECRET_ACCESS_KEY = 'test-secret';
+    process.env.R2_ACCOUNT_ID = 'acct-test';
+
+    try {
+      const result = await gridfs.storeFileInGridFs({
+        originalname: 'r2.png',
+        mimetype: 'image/png',
+        size: 12,
+        buffer: Buffer.from('test')
+      }, { userId: '507f1f77bcf86cd799439011' });
+
+      expect(result.url).toContain('https://cdn.example.com');
+      expect(result.url).toContain('r2.png');
+    } finally {
+      if (originalPublicBase === undefined) delete process.env.PUBLIC_BASE_URL;
+      else process.env.PUBLIC_BASE_URL = originalPublicBase;
+
+      if (originalR2Bucket === undefined) delete process.env.R2_BUCKET;
+      else process.env.R2_BUCKET = originalR2Bucket;
+
+      if (originalR2PublicUrl === undefined) delete process.env.R2_PUBLIC_URL;
+      else process.env.R2_PUBLIC_URL = originalR2PublicUrl;
+
+      if (originalAccessKey === undefined) delete process.env.R2_ACCESS_KEY_ID;
+      else process.env.R2_ACCESS_KEY_ID = originalAccessKey;
+
+      if (originalSecretKey === undefined) delete process.env.R2_SECRET_ACCESS_KEY;
+      else process.env.R2_SECRET_ACCESS_KEY = originalSecretKey;
+
+      if (originalAccountId === undefined) delete process.env.R2_ACCOUNT_ID;
+      else process.env.R2_ACCOUNT_ID = originalAccountId;
+    }
+  });
 });

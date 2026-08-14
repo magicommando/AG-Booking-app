@@ -45,7 +45,7 @@ exports.uploadMedia = async (req, res) => {
 
     const mediaType = req.file.mimetype?.startsWith('video/') ? 'video' : 'image';
     const storageResult = await storeFileInGridFs(req.file, { userId: req.user?.userId, mediaType });
-    const fileUrl = `/uploads/grid/${storageResult.filename}`;
+    const fileUrl = storageResult?.url || `/uploads/grid/${storageResult?.filename || req.file.originalname || 'upload'}`;
 
     const userId = req.user?.userId && mongoose.Types.ObjectId.isValid(req.user.userId)
       ? new mongoose.Types.ObjectId(req.user.userId)
@@ -54,12 +54,12 @@ exports.uploadMedia = async (req, res) => {
     const savedAsset = await MediaAsset.create({
       userId,
       url: fileUrl,
-      fileName: storageResult.filename,
+      fileName: storageResult?.filename || req.file.originalname,
       originalName: req.file.originalname,
       type: mediaType,
       contentType: req.file.mimetype,
       size: req.file.size,
-      fileId: storageResult.fileId
+      fileId: storageResult?.fileId
     });
 
     res.json({
@@ -69,7 +69,7 @@ exports.uploadMedia = async (req, res) => {
       photoUrl: mediaType === 'image' ? fileUrl : undefined,
       videoUrl: mediaType === 'video' ? fileUrl : undefined,
       assetId: savedAsset._id,
-      fileId: storageResult.fileId
+      fileId: storageResult?.fileId
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

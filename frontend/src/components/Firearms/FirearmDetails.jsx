@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppState } from "../../state/AppState";
 import api, { resolveAssetUrl } from "../../services/api";
 import { uploadPhoto as uploadAiPhoto, deleteMedia } from "../../services/aiService";
+import FirearmGallery from "./FirearmGallery";
 import "./FirearmDetails.css";
 
 export default function FirearmDetails({ firearm }) {
@@ -185,40 +186,13 @@ export default function FirearmDetails({ firearm }) {
         <div className="firearm-details-body">
           <div className="firearm-details-photos">
             {photoUrls.length > 0 ? (
-              <>
-                <img
-                  src={photoUrls[0]}
-                  alt={`${make} ${model}`}
-                  className="firearm-details-image"
-                />
-                {photoUrls.length > 1 && (
-                  <div className="firearm-details-thumb-grid">
-                    {photoUrls.slice(1).map((url, idx) => (
-                      <div key={`${url}-${idx}`} className="firearm-details-thumb-wrap">
-                        <img
-                          src={url}
-                          alt={`${make} ${model} view ${idx + 2}`}
-                          className="firearm-details-thumb"
-                        />
-                        <button
-                          type="button"
-                          className="firearm-details-remove-btn"
-                          onClick={() => handleRemovePhoto(normalizedPhotos[idx + 1])}
-                        >
-                          Remove Photo
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <button
-                  type="button"
-                  className="firearm-details-remove-btn firearm-details-remove-primary"
-                  onClick={() => handleRemovePhoto(normalizedPhotos[0])}
-                >
-                  Remove Photo
-                </button>
-              </>
+              <FirearmGallery
+                photos={photoUrls}
+                originalPhotos={normalizedPhotos}
+                make={make}
+                model={model}
+                onRemovePhoto={handleRemovePhoto}
+              />
             ) : (
               <div className="firearm-details-no-photo">No uploaded photos for this firearm.</div>
             )}

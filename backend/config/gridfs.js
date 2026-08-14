@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { GridFSBucket } = require('mongodb');
 const mongoose = require('mongoose');
+const { storeFileInObjectStorage } = require('./objectStorage');
 
 function getLocalUploadsDir() {
   return path.resolve(__dirname, '..', '..', 'uploads');
@@ -36,6 +37,15 @@ function getGridFsBucket(bucketName = 'uploads') {
 }
 
 async function storeFileInGridFs(file, metadata = {}) {
+  const objectStoreResult = await storeFileInObjectStorage(file, metadata);
+  if (objectStoreResult) {
+    return {
+      ...objectStoreResult,
+      url: objectStoreResult.url,
+      storageType: 'object-store'
+    };
+  }
+
   if (!mongoose.connection || !mongoose.connection.db) {
     return fallbackLocalStore(file, metadata);
   }

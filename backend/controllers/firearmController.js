@@ -90,12 +90,10 @@ exports.uploadPhoto = async (req, res) => {
       userId: req.user?.userId,
       mediaType: 'image'
     });
-    const uploadedUrl = storageResult.url;
-
-    const baseUrl = process.env.PUBLIC_BASE_URL || 'http://localhost:5000';
-    const publicUrl = /^https?:\/\//i.test(uploadedUrl)
-      ? uploadedUrl
-      : `${baseUrl.replace(/\/$/, '')}${uploadedUrl.startsWith('/') ? uploadedUrl : `/${uploadedUrl}`}`;
+    const uploadedUrl = storageResult?.url || '';
+    const publicUrl = typeof uploadedUrl === 'string' && uploadedUrl.trim()
+      ? uploadedUrl.trim()
+      : '';
 
     firearm.photos = Array.isArray(firearm.photos) ? firearm.photos : [];
     if (!firearm.photos.includes(publicUrl)) {

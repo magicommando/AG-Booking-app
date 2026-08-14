@@ -52,34 +52,130 @@
 }
 
 .firearm-details-photos {
-  width: 200px;
-  min-width: 220px;
+  width: 240px;
+  min-width: 240px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
+.firearm-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.firearm-gallery-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.firearm-gallery-main-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
 .firearm-details-image {
-  width: 200px;
-  height: auto;
+  width: 100%;
+  max-width: 240px;
+  max-height: 320px;
   border-radius: 8px;
   border: 1px solid #333;
   box-shadow: 0 0 8px rgba(0, 255, 255, 0.15);
   object-fit: cover;
+  background: rgba(15, 15, 15, 0.8);
 }
 
-.firearm-details-thumb-grid {
+.firearm-gallery-strip {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
+  max-height: 140px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 168, 106, 0.9) transparent;
+}
+
+.firearm-gallery-thumb-button {
+  padding: 0;
+  border: 1px solid #2f2f2f;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.firearm-gallery-thumb-button.is-selected {
+  border-color: #c9a86a;
+  box-shadow: 0 0 0 1px rgba(201, 168, 106, 0.5);
+}
+
+.firearm-gallery-thumb-button:hover {
+  transform: translateY(-1px);
 }
 
 .firearm-details-thumb {
+  display: block;
   width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 6px;
-  border: 1px solid #2f2f2f;
+}
+
+.firearm-details-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin-top: 4px;
+  padding: 6px 10px;
+  border: 1px solid rgba(247, 120, 120, 0.7);
+  border-radius: 6px;
+  background: rgba(118, 35, 35, 0.2);
+  color: #ffd1d1;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.firearm-details-remove-primary {
+  align-self: flex-start;
+}
+
+.firearm-gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.firearm-gallery-lightbox-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 0 24px rgba(201, 168, 106, 0.35);
+}
+
+.firearm-gallery-lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .firearm-details-no-photo {
