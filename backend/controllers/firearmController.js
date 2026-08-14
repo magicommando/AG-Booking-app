@@ -11,8 +11,22 @@ function normalizeFirearmPayload(body = {}) {
     caliber,
     type,
     photos,
+    images,
+    photoUrl,
+    image,
     notes
   } = body;
+
+  const sourcePhotos = Array.isArray(photos)
+    ? photos
+    : Array.isArray(images)
+      ? images
+      : [];
+
+  const normalizedPhotos = [...sourcePhotos, photoUrl, image]
+    .filter((url) => typeof url === 'string' && url.trim())
+    .map((url) => url.trim())
+    .filter((url, index, arr) => arr.indexOf(url) === index);
 
   return {
     manufacturer: manufacturer || make,
@@ -20,7 +34,7 @@ function normalizeFirearmPayload(body = {}) {
     serial: serial || serialNumber,
     caliber,
     type,
-    photos,
+    photos: normalizedPhotos,
     notes
   };
 }
@@ -78,11 +92,18 @@ exports.uploadPhoto = async (req, res) => {
     });
     const uploadedUrl = storageResult.url;
 
+    const baseUrl = process.env.PUBLIC_BASE_URL || 'http://localhost:5000';
+    const publicUrl = /^https?:\/\//i.test(uploadedUrl)
+      ? uploadedUrl
+      : `${baseUrl.replace(/\/$/, '')}${uploadedUrl.startsWith('/') ? uploadedUrl : `/${uploadedUrl}`}`;
+
     firearm.photos = Array.isArray(firearm.photos) ? firearm.photos : [];
-    firearm.photos.push(uploadedUrl);
+    if (!firearm.photos.includes(publicUrl)) {
+      firearm.photos.push(publicUrl);
+    }
     await firearm.save();
 
-    res.json({ message: 'Photo uploaded', photoUrl: uploadedUrl, mediaUrl: uploadedUrl, firearm });
+    res.json({ message: 'Photo uploaded', photoUrl: publicUrl, mediaUrl: publicUrl, firearm });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

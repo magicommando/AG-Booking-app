@@ -59,4 +59,24 @@ describe('FirearmDetails photo actions', () => {
       expect(deleteMedia).toHaveBeenCalledWith('test-token', '/uploads/grid/test.png');
     });
   });
+
+  it('renders the first image from the images field when photos is empty', () => {
+    render(
+      <MemoryRouter initialEntries={['/firearms/test-id']}>
+        <Routes>
+          <Route path="/firearms/:id" element={<FirearmDetails firearm={{
+            _id: 'test-id',
+            make: 'Smith',
+            model: 'Model 1',
+            serial: 'ABC123',
+            photos: [],
+            images: ['https://cdn.example.com/firearm-1.jpg'],
+            notes: 'ok'
+          }} />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(document.querySelector('img.firearm-details-image')?.getAttribute('src')).toBe('https://cdn.example.com/firearm-1.jpg');
+  });
 });

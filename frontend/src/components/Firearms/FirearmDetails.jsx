@@ -156,16 +156,26 @@ export default function FirearmDetails({ firearm }) {
   const make = activeFirearm.make || activeFirearm.manufacturer || "Unknown";
   const model = activeFirearm.model || "Model";
   const serial = activeFirearm.serial || activeFirearm.serialNumber || "-";
-  const normalizedPhotos = [
+  const allPhotoSources = [
     ...(Array.isArray(activeFirearm.photos) ? activeFirearm.photos : []),
+    ...(Array.isArray(activeFirearm.images) ? activeFirearm.images : []),
     activeFirearm.photoUrl,
-    activeFirearm.image
-  ].filter((url, index, arr) => typeof url === "string" && url.trim() && arr.indexOf(url) === index);
+    activeFirearm.image,
+    activeFirearm.mainImage
+  ];
+  const normalizedPhotos = allPhotoSources.filter((url, index, arr) => {
+    if (typeof url !== 'string') return false;
+    const trimmedUrl = url.trim();
+    if (!trimmedUrl) return false;
+    return arr.findIndex((candidate) => typeof candidate === 'string' && candidate.trim() === trimmedUrl) === index;
+  }).map((url) => url.trim());
   const clientId = activeFirearm.userId?._id || activeFirearm.userId || "-";
   const caliber = activeFirearm.caliber || "-";
   const type = activeFirearm.type || "-";
 
-  const photoUrls = normalizedPhotos.map((url) => resolveAssetUrl(url));
+  const photoUrls = normalizedPhotos
+    .map((url) => resolveAssetUrl(url))
+    .filter(Boolean);
 
   return (
     <div className="firearm-details-page">
